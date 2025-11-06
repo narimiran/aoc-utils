@@ -107,7 +107,7 @@
   "Split `input` into paragraphs (separated by a blank line).
   Parse each paragraph based on `parse-fn`."
   [input & [parse-fn word-sep]]
-  (mapv #(parse-input % parse-fn word-sep)
+  (mapv #(parse-lines % parse-fn {:word-sep word-sep})
         (parse-lines input nil {:nl-sep #"\n\n"})))
 
 
