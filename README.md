@@ -19,7 +19,7 @@ to make a package out of it because of two reasons:
 Add the following to your `deps.edn` file:
 
 ``` clojure
-com.github.narimiran/aoc-utils {:git/tag "v0.1.0" :git/sha "TODO"}
+com.github.narimiran/aoc-utils {:git/tag "v0.1.0" :git/sha "a0b1c19"}
 ```
 
 
