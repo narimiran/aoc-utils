@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  test-solutions:
+  testing:
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -40,10 +40,4 @@ jobs:
 
       - name: Run tests
         if : ${{ matrix.kind == 'tests' }}
-        working-directory: clojure
         run: clojure -M:test
-
-      # - name: Benchmark solutions
-      #   if : ${{ matrix.kind == 'benchmark' }}
-      #   working-directory: clojure
-      #   run: clojure -M tests/solutions_benchmark.clj

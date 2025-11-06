@@ -43,14 +43,13 @@ jobs:
           key: ${{ runner.os }}-clerk
 
       - name: Clerk Build
-        working-directory: clojure
         run: clojure -X:nextjournal/clerk :path-prefix '"public/build/${{ github.sha }}/"' :git/sha '"${{ github.sha }}"'
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
           # Upload entire repository
-          path: 'clojure/public/build'
+          path: 'public/build'
 
   deploy:
     environment:
