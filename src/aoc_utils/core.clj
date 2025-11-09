@@ -1,6 +1,30 @@
 ;; # Helper functions for Advent of Code
-
-
+;;
+;; This is a collection of various helper functions I usually
+;; use for solving Advent of Code tasks.
+;;
+;; Some highlights:
+;; - Read the contents of an input file with `read-input`.
+;;   This is usually just `(read-input 1)`, and if I need to
+;;   read the file containing test input, e.g. `01_test.txt`
+;;   then I use `(read-input "01_test")`
+;; - The input file usually contains multiple lines of data,
+;;   which is parsed with the `parse-line` function.
+;;   For the details on how to parse different datatypes, see below.
+;; - A very frequent task type is the one where we have a 2D-grid.
+;;   For converting the input to a datatype that can be easily
+;;   used as a grid, see `grid->point-map` and `grid->point-set` functions.
+;;   There are also some helpers to manipulate 2D points,
+;;   `pt+`, `pt-`, `pt*`, and their 3D equivalents (`pt-3d+`, etc.).
+;; - Some tasks are graph traversal problems, and for those
+;;   there are four options: `dfs`, `bfs`, `a-star`, `dijkstra`.
+;;   These try to be as general as possible to fit different tasks,
+;;   but they are not as performant as a specialized function for
+;;   a given task.
+;; - Out of all utility functions, the one most commonly used is
+;;   probably `transpose`, which is a shortcut for switching
+;;   from row- to column-representation of the data.
+;;
 ^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (ns aoc-utils.core
   {:nextjournal.clerk/visibility {:result :hide}
@@ -517,6 +541,9 @@
 ;;
 (defn transpose [matrix]
   (apply mapv vector matrix))
+
+(defn indexed [coll]
+  (map-indexed vector coll))
 
 (defn invert-tree [tree]
   (reduce-kv

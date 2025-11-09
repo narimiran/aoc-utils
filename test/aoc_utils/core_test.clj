@@ -214,6 +214,14 @@
 (def stevens [2 4 6 21 32])
 
 (deftest utilities
+  (testing "transpose"
+    (is (= [[1 3] [2 4]]
+           (aoc/transpose [[1 2] [3 4]]))))
+  (testing "indexed"
+    (is (= [[0 10] [1 20] [2 30]]
+           (aoc/indexed [10 20 30])))
+    (is (= [[0 [10 20]] [1 [30 40]]]
+           (aoc/indexed [[10 20] [30 40]]))))
   (testing "count-if"
     (is (= 6 (aoc/count-if even? evens)))
     (is (zero? (aoc/count-if odd? evens)))
