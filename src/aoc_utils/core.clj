@@ -1,50 +1,13 @@
-;; # Helper functions for Advent of Code
-;;
-;; This is a collection of various helper functions I usually
-;; use for solving Advent of Code tasks.
-;;
-;; Some highlights:
-;; - Read the contents of an input file with `read-input`.
-;;   This is usually just `(read-input 1)`, and if I need to
-;;   read the file containing test input, e.g. `01_test.txt`
-;;   then I use `(read-input "01_test")`
-;; - The input file usually contains multiple lines of data,
-;;   which is parsed with the `parse-line` function.
-;;   For the details on how to parse different datatypes, see below.
-;; - A very frequent task type is the one where we have a 2D-grid.
-;;   For converting the input to a datatype that can be easily
-;;   used as a grid, see `grid->point-map` and `grid->point-set` functions.
-;;   There are also some helpers to manipulate 2D points,
-;;   `pt+`, `pt-`, `pt*`, and their 3D equivalents (`pt-3d+`, etc.).
-;; - Some tasks are graph traversal problems, and for those
-;;   there are four options: `dfs`, `bfs`, `a-star`, `dijkstra`.
-;;   These try to be as general as possible to fit different tasks,
-;;   but they are not as performant as a specialized function for
-;;   a given task.
-;; - Out of all utility functions, the one most commonly used is
-;;   probably `transpose`, which is a shortcut for switching
-;;   from row- to column-representation of the data.
-;;
-^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (ns aoc-utils.core
-  {:nextjournal.clerk/visibility {:result :hide}
-   :nextjournal.clerk/auto-expand-results? true
-   :nextjournal.clerk/toc true}
   (:require [clojure.string :as str]
             [clojure.math :as math]
             [clojure.data.int-map :as i]
-            [clojure.data.priority-map :refer [priority-map]]
-            [nextjournal.clerk :as clerk]
-            [aoc-utils.core :as aoc]))
+            [clojure.data.priority-map :refer [priority-map]]))
 
 
 
 
 ;; ## Reading input files
-;;
-;; My inputs are always in the `../inputs/` directory,
-;; named `dd`, i.e. have two digits, and have a `.txt` extension.
-;; Let's simplify reading them:
 ;;
 (defn read-input
   "Read contents of an input file."
@@ -53,9 +16,6 @@
                (format "%02d" file)
                file)]
     (str/trim (slurp (str "../inputs/" name ".txt")))))
-
-;; This allows `(read-input 1)` to read the contents of a `01.txt` file.
-
 
 
 
@@ -91,36 +51,6 @@
             parse-fn)]
     (f s)))
 
-;; The `parse-input` is doing some heavy lifting here.\
-;; The `parse-fn` parameter there is the key to the versatility:
-;; it makes possible to parse all AoC inputs, either by the typical
-;; functions (parsing integers, extracting integers from a line, creating a
-;; vector of integers, vector of characters, splitting lines into words, or
-;; keeping everything as it is) or by passing it a custom function, specially
-;; crafted for the task at hand.
-
-
-^{:nextjournal.clerk/visibility {:code :fold :result :show}}
-(let [inputs ["123" "abc12def34" "abc12def34" "ab1c" "abc def"]
-      fns [:int :ints :digits :chars :words]
-      results (map (fn [line parse-fn] (parse-input line parse-fn))
-                   inputs
-                   fns)]
-  (clerk/html
-   [:div.flex.justify-center
-    (clerk/table {"Input" inputs
-                  "Parse function" fns
-                  "Result" results})]))
-
-
-
-
-;; Now, parsing a whole input file is just a matter of applying that function
-;; to each line of the input.\
-;; On some rare occasions, the input is split into paragraphs by having an
-;; empty line between different parts of input.
-;; We have a function for that too:
-;;
 (defn parse-lines
   "Parse each line of `input`."
   [input & [parse-fn {:keys [word-sep nl-sep]}]]
@@ -137,33 +67,7 @@
 
 
 
-^{:nextjournal.clerk/visibility {:code :fold :result :show}}
-(let [lines ["1 2 3\n4 -5 6\n7 8 9"
-             "abc def\nghi jkl"
-             "abc\ndef\nghi"]
-      fns [:ints :words :chars]
-      results (map (fn [l f] (parse-lines l f)) lines fns)]
-  (clerk/html
-   [:div.flex.justify-center
-    (clerk/table {"Lines" lines
-                  "Parse function" fns
-                  "Result" results})]))
-
-
-
-
-
 ;; ## Grids
-;;
-;; AoC wouldn't be AoC if there aren't many tasks where you're given a 2D
-;; grid (sometimes even 3D).
-;;
-;; It is important to have a usable representation of a grid.
-;; Sometimes we need to know a character at each coordinate (`point-map`),
-;; the other times only the coordinates are important (`point-set`).
-;; We can only keep the coordinates that satisfy the `pred` function.
-
-;; The hashed variants are used when trying to optimize for speed.
 ;;
 (defn grid->point-map
   "Convert a 2D list of points to a {[x y]: char} hashmap."
@@ -206,16 +110,6 @@
 
 
 
-
-
-
-
-
-
-;; Sometimes we need to inspect a grid.
-;; With `points->lines`, we create a printable string of all
-;; points in the grid.
-;;
 (defn points->lines [points]
   (if (map? points) (points->lines (set (keys points)))
       (let [x-lim (inc ^long (reduce max (map first points)))
@@ -227,24 +121,11 @@
                                   \█ \space))))))))
 
 
-;; #### Usage
-;;
-^{:nextjournal.clerk/visibility {:code :show :result :show}}
-(let [grid ["#.." "..#" "##."]]
-  (grid->point-set grid #{\#}))
-
-^{:nextjournal.clerk/visibility {:code :show :result :show}}
-(let [grid ["#.." "..#" "##."]]
-  (points->lines (grid->point-map grid #{\#})))
-
 
 
 
 
 ;; ### 2D grids
-;;
-;; We also need some functions to navigate through the grids or do
-;; stuff with the points in them:
 ;;
 (defn manhattan ^long
   ([pt] (manhattan pt [0 0]))
@@ -281,7 +162,6 @@
 
 
 
-;; We often need to find neigbhours of a point:
 
 (def ^:const nb-4 [[0 -1] [-1 0] [1 0] [0 1]])
 (def ^:const diags [[-1 -1] [1 -1] [-1 1] [1 1]])
@@ -307,57 +187,7 @@
 
 
 
-;; #### Usage
-;;
-;; Different amount of neighbours of a point:
-;;
-^{:nextjournal.clerk/visibility {:code :fold :result :show}}
-(let [point [0 0]
-      nbs [4 5 8 9]
-      results (map #(neighbours % point) nbs)
-      axis-template {:ticks ""
-                     :showticklabels false
-                     :showgrid false
-                     :zeroline false
-                     :range [-2 2]}]
-  (clerk/row
-   (for [res results]
-     (clerk/plotly {:config {:displayModeBar false
-                             :displayLogo false}
-                    :data [{:x (map first res)
-                            :y (map second res)
-                            :type :scatter
-                            :mode :markers
-                            :marker {:size 12}
-                            :showscale false}]
-                    :layout {:xaxis axis-template
-                             :yaxis axis-template
-                             :width 100
-                             :height 100
-                             :margin {:l 0 :r 0 :t 0 :b 0}}}))))
-
-;; Some functions on a point:
-;;
-^{:nextjournal.clerk/visibility {:code :fold :result :show}}
-(let [pts [[1 0] [1 0] [3 -4]]
-      fns [left-turn right-turn manhattan]
-      fnames ["left-turn" "right-turn" "manhattan"]
-      results (map (fn [p f] (f p)) pts fns)]
-  (clerk/html
-     [:div.flex.justify-center
-      (clerk/table {"Point" pts
-                    "Parse function" fnames
-                    "Result" results})]))
-
-
-
-
-
-
 ;; ### 3D grids
-;;
-;; Sometimes we also get 3D-grids, so here are some simplified
-;; 3D-variants of the functions above.
 ;;
 (defn manhattan-3d ^long
   ([p] (manhattan-3d p [0 0 0]))
@@ -393,24 +223,7 @@
 
 
 
-
-
 ;; ## Graph traversal
-;;
-;; Graph traversal problems are relatively frequent in AoC,
-;; but this is the first time I'm writing a pre-defined helper function
-;; for them.
-;; It remains to be seen how useful it'll be for specific tasks with
-;; their specific needs: I feel like in the recent years the graph traversal
-;; tasks always had some gotcha which made it harder to use a general algorithm,
-;; rather than a specific one written for the task at hand.
-;;
-;; If this gets used, the implementation details will probably change,
-;; depending on the specific tasks.
-;; (As if the `traverse` function is not already way too long and complicated.)
-;;
-;; All four algorithms (`DFS`, `BFS`, `Dijkstra`, `A*`) share the same logic,
-;; the difference is in a `queue` type.
 ;;
 (def empty-queue clojure.lang.PersistentQueue/EMPTY)
 
@@ -508,36 +321,9 @@
 
 
 
-;; #### Usage
-;;
-^{:nextjournal.clerk/visibility {:code :show :result :show}}
-(let [walls #{[0 1] [1 1] [1 3] [2 3] [4 0] [3 1] [4 2] [3 3] [4 4]}
-      start [0 0]
-      end [3 4]
-      size 5]
-  [(points->lines walls)
-   (aoc/bfs {:start start
-             :end end
-             :walls walls
-             :size size})])
-
-
-
 
 
 ;; ## Utilities
-;;
-;; Functions for some common AoC stuff.
-;;
-;; - `transpose`: We often need to iterate through columns, instead of rows.
-;;   This transposes the matrix.
-;; - `invert-tree`: Connections between nodes in a reverse order.
-;; - `count-if`: In many tasks we need to apply some condition and then count
-;;   the number of elements which satisfy it. This should be slightly faster
-;;   (to type, at least) than `(count (filter ...))`.
-;; - `sum-map`: Similarly, in some tasks we need to apply a function to
-;;   each row, and then take a sum of the results.
-;; - `find-first`: Returns the first element which satisfies a predicate.
 ;;
 (defn transpose [matrix]
   (apply mapv vector matrix))
@@ -633,14 +419,7 @@
 
 
 
-
-
-
-
 ;; ## Need for Speed
-;;
-;; These functions should be faster than their counterparts in the Clojure's
-;; standard library.
 ;;
 (defn none?
   "A faster version of `not-any?`."

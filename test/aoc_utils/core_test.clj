@@ -46,7 +46,7 @@
     (is (= [[1 2 3 4] [5 6 7 8]]
            (aoc/parse-lines int-paragraphs :ints {:nl-sep #"\n\n"})))
     (is (= [["1,2" "3,4"] ["5,6" "7,8"]]
-           (aoc/parse-paragraphs int-paragraphs nil)))
+           (aoc/parse-paragraphs int-paragraphs)))
     (is (= [[[1 2] [3 4]] [[5 6] [7 8]]]
            (aoc/parse-paragraphs int-paragraphs :ints)))
     (is (= [[["1" "2"] ["3" "4"]] [["5" "6"] ["7" "8"]]]
