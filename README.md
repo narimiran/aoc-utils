@@ -22,7 +22,7 @@ Add the following to your `deps.edn` file:
 {:deps
   ; other deps
   ,,,
-  com.github.narimiran/aoc-utils {:git/tag "v0.1.2" :git/sha "cba8cae"}
+  com.github.narimiran/aoc-utils {:git/tag "v0.2.0" :git/sha "d1ba894"}
 }
 ```
 
