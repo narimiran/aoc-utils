@@ -1,6 +1,9 @@
 name: Pages
 
-on: push
+on:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -32,24 +35,16 @@ jobs:
             ~/.m2
             ~/.gitlibs
             ~/.deps.clj
-          # List all files containing dependencies:
           key: cljdeps-${{ hashFiles('deps.edn') }}
           restore-keys: cljdeps-
 
-      - name: Clerk Cache
-        uses: actions/cache@v4
-        with:
-          path: .cache
-          key: ${{ runner.os }}-clerk
-
-      - name: Clerk Build
-        run: clojure -X:nextjournal/clerk :path-prefix '"public/build/${{ github.sha }}/"' :git/sha '"${{ github.sha }}"'
+      - name: Build Codox documentation
+        run: clojure -X:codox
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          # Upload entire repository
-          path: 'public/build'
+          path: 'target/doc'
 
   deploy:
     environment:

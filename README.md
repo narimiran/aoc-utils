@@ -22,7 +22,7 @@ Add the following to your `deps.edn` file:
 {:deps
   ; other deps
   ,,,
-  com.github.narimiran/aoc-utils {:git/tag "v0.2.0" :git/sha "d1ba894"}
+  com.github.narimiran/aoc-utils {:git/tag "v0.3.0" :git/sha "d1ba894"}
 }
 ```
 
@@ -39,7 +39,7 @@ Add the following to your `deps.edn` file:
 
 ## Documentation
 
-The documentation is available as a Clerk notebook at:
+The documentation is available at:
 https://narimiran.github.io/aoc-utils
 
 
