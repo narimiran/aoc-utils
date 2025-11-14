@@ -6,11 +6,15 @@
 
 
 
-
 ;; ## Reading input files
-;;
+
 (defn read-input
-  "Read contents of an input file."
+  "Read contents of an input file.
+
+  Assumes:
+
+  - inputs are in the sibling `../inputs` directory
+  - inputs have `.txt` extension"
   [file]
   (let [name (if (int? file)
                (format "%02d" file)
@@ -21,7 +25,7 @@
 
 
 ;; ## Input parsing
-;;
+
 (defn integers
   "Extracts all integers from a string.
   It can ignore `-` if `negative=false`, e.g. for ranges `23-45`."
@@ -68,7 +72,7 @@
 
 
 ;; ## Grids
-;;
+
 (defn grid->point-map
   "Convert a 2D list of points to a {[x y]: char} hashmap."
   ([v] (grid->point-map v identity nil))
@@ -126,21 +130,38 @@
 
 
 ;; ### 2D grids
-;;
-(defn manhattan ^long
-  ([pt] (manhattan pt [0 0]))
-  ([[^long x1 ^long y1] [^long x2 ^long y2]]
-   (+ (abs (- x1 x2))
-      (abs (- y1 y2)))))
 
-(defn pt+ ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
-  [(+ x1 x2) (+ y1 y2)])
+(defn manhattan
+  "Manhattan distance of a point or between two points.
 
-(defn pt- ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
-  [(- x1 x2) (- y1 y2)])
+  Works for both 2D and 3D points."
+  (^long [^longs pt]
+   (reduce + (map abs pt)))
+  (^long [^longs pt1 ^longs pt2]
+   (reduce + (map (comp abs -) pt1 pt2))))
 
-(defn pt* ^longs [^long magnitude [^long x ^long y]]
-  [(* magnitude x) (* magnitude y)])
+(defn pt+
+  "Sum of two points.
+
+  Works for both 2D and 3D points."
+  ^longs [^longs pt1 ^longs pt2]
+  (mapv + pt1 pt2))
+
+(defn pt-
+  "Difference between two points.
+
+  Works for both 2D and 3D points."
+  ^longs [^longs pt1 ^longs pt2]
+  (mapv - pt1 pt2))
+
+(defn pt*
+  "Multiply each coordinate by `magnitude`.
+
+  Works for both 2D and 3D points."
+  ^longs [^long magnitude ^longs pt]
+  (mapv #(* magnitude %) pt))
+
+
 
 (defn left-turn
   "Assumes left-hand coord system (positive y goes down)."
@@ -188,24 +209,6 @@
 
 
 ;; ### 3D grids
-;;
-(defn manhattan-3d ^long
-  ([p] (manhattan-3d p [0 0 0]))
-  ([[^long x1 ^long y1 ^long z1] [^long x2 ^long y2 ^long z2]]
-   (+ (abs (- x1 x2))
-      (abs (- y1 y2))
-      (abs (- z1 z2)))))
-
-(defn pt-3d+ ^longs [[^long x1 ^long y1 ^long z1]
-                     [^long x2 ^long y2 ^long z2]]
-  [(+ x1 x2) (+ y1 y2) (+ z1 z2)])
-
-(defn pt-3d- ^longs [[^long x1 ^long y1 ^long z1]
-                     [^long x2 ^long y2 ^long z2]]
-  [(- x1 x2) (- y1 y2) (- z1 z2)])
-
-(defn pt-3d* ^longs [^long magnitude [^long x ^long y ^long z]]
-  [(* magnitude x) (* magnitude y) (* magnitude z)])
 
 (defn neighbours-3d [[^long x ^long y ^long z]]
   [[(dec x) y z] [(inc x) y z]
@@ -224,7 +227,7 @@
 
 
 ;; ## Graph traversal
-;;
+
 (def empty-queue clojure.lang.PersistentQueue/EMPTY)
 
 (defn- build-path [current seen]
@@ -307,16 +310,24 @@
                      nbs+costs))))))))
 
 
-(defn dfs [options]
+(defn dfs
+  "Traverse a graph using the DFS alorithm."
+  [options]
   (traverse :dfs options))
 
-(defn bfs [options]
+(defn bfs
+  "Traverse a graph using the BFS alorithm."
+  [options]
   (traverse :bfs options))
 
-(defn a-star [options]
+(defn a-star
+  "Traverse a graph using the A* alorithm."
+  [options]
   (traverse :a-star options))
 
-(defn dijkstra [options]
+(defn dijkstra
+  "Traverse a graph using the Dijkstra's alorithm."
+  [options]
   (traverse :dijk options))
 
 
@@ -324,7 +335,7 @@
 
 
 ;; ## Utilities
-;;
+
 (defn transpose [matrix]
   (apply mapv vector matrix))
 
@@ -372,7 +383,15 @@
 (defn prod-map [f xs]
   (transduce (map f) * xs))
 
-(defn find-first [pred xs]
+(defn max-map [f xs]
+  (reduce max (map f xs)))
+
+(defn max-pmap [f xs]
+  (reduce max (pmap f xs)))
+
+(defn find-first
+  "Find first element of a collection which satisfies the predicate."
+  [pred xs]
   (reduce
    (fn [_ x]
      (when (pred x) (reduced x)))
@@ -409,7 +428,9 @@
               long
               inc)))
 
-(defn sign ^long [^long x]
+(defn sign
+  "Sign of a number."
+  ^long [^long x]
   (cond
     (pos? x) 1
     (neg? x) -1
@@ -420,7 +441,7 @@
 
 
 ;; ## Need for Speed
-;;
+
 (defn none?
   "A faster version of `not-any?`."
   [pred xs]

@@ -136,13 +136,13 @@
 
 (deftest grid-3d
   (testing "3d points"
-    (is (= 9 (aoc/manhattan pt3)))
-    (is (= 22 (aoc/manhattan pt3 pt4)))
-    (is (= [5 9 17] (aoc/pt-3d+ pt3 pt4)))
-    (is (= [9 -13 -9] (aoc/pt-3d- pt3 pt4)))
-    (is (= [-9 13 9] (aoc/pt-3d- pt4 pt3)))
-    (is (= [14 -4 8] (aoc/pt-3d* 2 pt3)))
-    (is (= [20 -110 -130] (aoc/pt-3d* -10 pt4))))
+    (is (= 13 (aoc/manhattan pt3)))
+    (is (= 31 (aoc/manhattan pt3 pt4)))
+    (is (= [5 9 17] (aoc/pt+ pt3 pt4)))
+    (is (= [9 -13 -9] (aoc/pt- pt3 pt4)))
+    (is (= [-9 13 9] (aoc/pt- pt4 pt3)))
+    (is (= [14 -4 8] (aoc/pt* 2 pt3)))
+    (is (= [20 -110 -130] (aoc/pt* -10 pt4))))
 
   (testing "neighbours-3d"
     (is (= [[6 -2 4] [8 -2 4] [7 -3 4] [7 -1 4] [7 -2 3] [7 -2 5]]
@@ -235,6 +235,16 @@
                             :while (< x 3)
                             y (range 10)
                             :when (or (< y 2) (= y 9))]))))
+  (testing "sum-map-indexed"
+    (is (= 12 (aoc/sum-map-indexed
+               (fn [idx _] (* 2 idx))
+               [10 20 30 40])))
+    (is (= 80 (aoc/sum-map-indexed
+               (fn [idx el] (* idx el))
+               [10 20 30]))))
+  (testing "max-map"
+    (is (= 10 (aoc/max-map #(* 2 %) (range 6))))
+    (is (= 6 (aoc/max-map val {:a 3 :b 6 :c 4}))))
   (testing "find-first"
     (is (= 2 (aoc/find-first even? evens)))
     (is (nil? (aoc/find-first odd? evens)))
