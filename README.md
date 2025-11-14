@@ -22,7 +22,9 @@ Add the following to your `deps.edn` file:
 {:deps
   ; other deps
   ,,,
-  com.github.narimiran/aoc-utils {:git/tag "v0.3.0" :git/sha "b62d0a4"}
+  ; check the latest tag and sha in the releases/tags: 
+  ; https://github.com/narimiran/aoc-utils/tags
+  com.github.narimiran/aoc-utils {:git/tag "v0.4.0" :git/sha "1a0be80"}
 }
 ```
 
