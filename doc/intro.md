@@ -23,9 +23,6 @@ use for solving Advent of Code (AoC) tasks.
   These try to be as general as possible to fit different tasks,
   but they are not as performant as a specialized function for
   a given task.
-- Out of all utility functions, the one most commonly used is
-  probably `transpose`, which is a shortcut for switching
-  from row- to column-representation of the data.
 
 
 
@@ -107,19 +104,31 @@ we create a printable string of all points in the grid.
 
 ----
 
+### 2D grids
 
-Here are some functions that help us with points in grids:
+Here are some functions that help us with points in 2D grids:
 
-- [`manhattan`](aoc-utils.core.html#var-manhattan) (2D, 3D)
-- [`pt+`](aoc-utils.core.html#var-pt.2B) (2D, 3D)
-- [`pt-`](aoc-utils.core.html#var-pt-) (2D, 3D)
-- [`pt*`](aoc-utils.core.html#var-pt*) (2D, 3D)
-- [`left-turn`](aoc-utils.core.html#var-left-turn) (2D)
-- [`right-turn`](aoc-utils.core.html#var-right-turn) (2D)
-- [`inside?`](aoc-utils.core.html#var-inside.3F) (2D)
-- [`neighbours`](aoc-utils.core.html#var-neighbours) (2D)
-- [`inside-3d?`](aoc-utils.core.html#var-inside-3d.3F) (3D)
-- [`neighbours-3d`](aoc-utils.core.html#var-neighbours-3d) (3D)
+- [`manhattan`](aoc-utils.core.html#var-manhattan)
+- [`pt+`](aoc-utils.core.html#var-pt.2B)
+- [`pt-`](aoc-utils.core.html#var-pt-)
+- [`pt*`](aoc-utils.core.html#var-pt*)
+- [`left-turn`](aoc-utils.core.html#var-left-turn)
+- [`right-turn`](aoc-utils.core.html#var-right-turn)
+- [`inside?`](aoc-utils.core.html#var-inside.3F)
+- [`neighbours`](aoc-utils.core.html#var-neighbours)
+
+
+
+### 3D grids
+
+For 3D grids, we have variants of the functions above:
+
+- [`manhattan-3d`](aoc-utils.core.html#var-manhattan-3d)
+- [`pt-3d+`](aoc-utils.core.html#var-pt-3d.2B)
+- [`pt-3d-`](aoc-utils.core.html#var-pt-3d-)
+- [`pt-3d*`](aoc-utils.core.html#var-pt-3d*)
+- [`inside-3d?`](aoc-utils.core.html#var-inside-3d.3F)
+- [`neighbours-3d`](aoc-utils.core.html#var-neighbours-3d)
 
 
 

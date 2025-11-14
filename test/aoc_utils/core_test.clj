@@ -136,13 +136,13 @@
 
 (deftest grid-3d
   (testing "3d points"
-    (is (= 13 (aoc/manhattan pt3)))
-    (is (= 31 (aoc/manhattan pt3 pt4)))
-    (is (= [5 9 17] (aoc/pt+ pt3 pt4)))
-    (is (= [9 -13 -9] (aoc/pt- pt3 pt4)))
-    (is (= [-9 13 9] (aoc/pt- pt4 pt3)))
-    (is (= [14 -4 8] (aoc/pt* 2 pt3)))
-    (is (= [20 -110 -130] (aoc/pt* -10 pt4))))
+    (is (= 13 (aoc/manhattan-3d pt3)))
+    (is (= 31 (aoc/manhattan-3d pt3 pt4)))
+    (is (= [5 9 17] (aoc/pt-3d+ pt3 pt4)))
+    (is (= [9 -13 -9] (aoc/pt-3d- pt3 pt4)))
+    (is (= [-9 13 9] (aoc/pt-3d- pt4 pt3)))
+    (is (= [14 -4 8] (aoc/pt-3d* 2 pt3)))
+    (is (= [20 -110 -130] (aoc/pt-3d* -10 pt4))))
 
   (testing "neighbours-3d"
     (is (= [[6 -2 4] [8 -2 4] [7 -3 4] [7 -1 4] [7 -2 3] [7 -2 5]]

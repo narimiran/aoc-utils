@@ -155,35 +155,26 @@
 ;; ### 2D grids
 
 (defn manhattan
-  "Manhattan distance of a point or between two points.
-
-  Works for both 2D and 3D points."
-  (^long [^longs pt]
-   (reduce + (map abs pt)))
-  (^long [^longs pt1 ^longs pt2]
-   (reduce + (map (comp abs -) pt1 pt2))))
+  "Manhattan distance of a 2D point or between two 2D points."
+  (^long [pt] (manhattan pt [0 0]))
+  (^long [[^long x1 ^long y1] [^long x2 ^long y2]]
+   (+ (abs (- x1 x2))
+      (abs (- y1 y2)))))
 
 (defn pt+
-  "Sum of two points.
-
-  Works for both 2D and 3D points."
-  ^longs [^longs pt1 ^longs pt2]
-  (mapv + pt1 pt2))
+  "Sum of two 2D points."
+  ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
+  [(+ x1 x2) (+ y1 y2)])
 
 (defn pt-
-  "Difference between two points.
-
-  Works for both 2D and 3D points."
-  ^longs [^longs pt1 ^longs pt2]
-  (mapv - pt1 pt2))
+  "Difference between two 2D points."
+  ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
+  [(- x1 x2) (- y1 y2)])
 
 (defn pt*
-  "Multiply each coordinate by `magnitude`.
-
-  Works for both 2D and 3D points."
-  ^longs [^long magnitude ^longs pt]
-  (mapv #(* magnitude %) pt))
-
+  "Multiply each coordinate of a 2D point by `magnitude`."
+  ^longs [^long magnitude [^long x ^long y]]
+  [(* magnitude x) (* magnitude y)])
 
 
 (defn left-turn
@@ -229,7 +220,7 @@
 
 
 (defn neighbours
-  "4/5/8/9 neighbours of a point.
+  "4/5/8/9 neighbours of a 2D point.
 
   Return only those neighbours which satisfy `pred`."
   (^longs [^long amount pt] (neighbours amount pt identity))
@@ -249,6 +240,32 @@
 
 
 ;; ### 3D grids
+
+(defn manhattan-3d
+  "Manhattan distance of a 3D point or between two 3D points."
+  (^long [p] (manhattan-3d p [0 0 0]))
+  (^long [[^long x1 ^long y1 ^long z1] [^long x2 ^long y2 ^long z2]]
+   (+ (abs (- x1 x2))
+      (abs (- y1 y2))
+      (abs (- z1 z2)))))
+
+(defn pt-3d+
+  "Sum of two 3D points."
+  ^longs [[^long x1 ^long y1 ^long z1]
+          [^long x2 ^long y2 ^long z2]]
+  [(+ x1 x2) (+ y1 y2) (+ z1 z2)])
+
+(defn pt-3d-
+  "Difference between two 3D points."
+  ^longs [[^long x1 ^long y1 ^long z1]
+          [^long x2 ^long y2 ^long z2]]
+  [(- x1 x2) (- y1 y2) (- z1 z2)])
+
+(defn pt-3d*
+  "Multiply each coordinate of a 3D point by `magnitude`."
+  ^longs [^long magnitude [^long x ^long y ^long z]]
+  [(* magnitude x) (* magnitude y) (* magnitude z)])
+
 
 (defn neighbours-3d
   "Six neighbours of a 3D point, two in each direction."
