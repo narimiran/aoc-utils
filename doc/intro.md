@@ -175,8 +175,8 @@ Functions for some common AoC stuff.
   the number of elements which satisfy it. This should be slightly faster
   (to type, at least) than `(count (filter ...))`.
 - [`sum-map`](aoc-utils.core.html#var-sum-map): 
-  Similarly, in some tasks we need to apply a function to
-  each row, and then take a sum of the results.
+  Similarly, in some tasks we need to map a function to
+  each element, and then take a sum of the results.
   There are also `sum-map-indexed`, `sum-pmap`, `prod-map`,
   `max-map` and `max-pmap` variants.
 - [`find-first`](aoc-utils.core.html#var-find-first):

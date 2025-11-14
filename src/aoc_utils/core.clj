@@ -43,7 +43,14 @@
        (filterv some?)))
 
 (defn parse-input
-  "Parse input string, based on `parse-fn`."
+  "Parse input string, based on `parse-fn`, which can be a custom
+  function or one of the following:
+
+  - `:int` - parse a single integer
+  - `:ints`- get all integers
+  - `:digits` - extract all single digits
+  - `:chars` - make a list of chars
+  - `:words` - make a list of words"
   [s & [parse-fn word-sep]]
   (let [f (case parse-fn
             :int    parse-long
@@ -55,11 +62,21 @@
             parse-fn)]
     (f s)))
 
+
 (defn parse-lines
-  "Parse each line of `input`."
+  "Parse each line of `input` by applying `parse-fn` to it.
+
+  We can pass any function as `parse-fn` or use one of the following:
+
+  - `:int` - parse a single integer
+  - `:ints`- get all integers
+  - `:digits` - extract all single digits
+  - `:chars` - make a list of chars
+  - `:words` - make a list of words"
   [input & [parse-fn {:keys [word-sep nl-sep]}]]
   (mapv #(parse-input % parse-fn word-sep)
         (str/split input (or nl-sep #"\n"))))
+
 
 (defn parse-paragraphs
   "Split `input` into paragraphs (separated by a blank line).
@@ -74,7 +91,9 @@
 ;; ## Grids
 
 (defn grid->point-map
-  "Convert a 2D list of points to a {[x y]: char} hashmap."
+  "Convert a 2D list of points to a {[x y]: char} hashmap.
+
+  Keep only the points that satisfy a `pred`."
   ([v] (grid->point-map v identity nil))
   ([v pred] (grid->point-map v pred nil))
   ([v pred mult]
@@ -94,7 +113,9 @@
 
 
 (defn grid->point-set
-  "Convert a 2D list of points to a #{[x y]} set."
+  "Convert a 2D list of points to a #{[x y]} set.
+
+  Keep only the points that satisfy a `pred`."
   ([v] (grid->point-set v identity nil))
   ([v pred] (grid->point-set v pred nil))
   ([v pred mult]
@@ -114,7 +135,9 @@
 
 
 
-(defn points->lines [points]
+(defn points->lines
+  "Convert a map/set representation of a grid to a printable string of points."
+  [points]
   (if (map? points) (points->lines (set (keys points)))
       (let [x-lim (inc ^long (reduce max (map first points)))
             y-lim (inc ^long (reduce max (map second points)))]
@@ -184,17 +207,33 @@
 
 
 
-(def ^:const nb-4 [[0 -1] [-1 0] [1 0] [0 1]])
-(def ^:const diags [[-1 -1] [1 -1] [-1 1] [1 1]])
-(def ^:const nb-5 (conj nb-4 [0 0]))
-(def ^:const nb-8 (into nb-4 diags))
-(def ^:const nb-9 (conj nb-8 [0 0]))
+(def ^:const nb-4
+  "Four neighbours of a 2D point."
+  [[0 -1] [-1 0] [1 0] [0 1]])
+
+(def ^:const diags
+  "Diagonal neighbours of a 2D point."
+  [[-1 -1] [1 -1] [-1 1] [1 1]])
+
+(def ^:const nb-5
+  "Four neighbours plus a 2D point."
+  (conj nb-4 [0 0]))
+
+(def ^:const nb-8
+  "Eight neighbours of a 2D point."
+  (into nb-4 diags))
+
+(def ^:const nb-9
+  "Eight neighbours plus a 2D point."
+  (conj nb-8 [0 0]))
 
 
 (defn neighbours
-  "4/5/8/9 neighbours of a point."
+  "4/5/8/9 neighbours of a point.
+
+  Return only those neighbours which satisfy `pred`."
   (^longs [^long amount pt] (neighbours amount pt identity))
-  (^longs [^long amount [^long x ^long y] cnd]
+  (^longs [^long amount [^long x ^long y] pred]
    (let [nbs (case amount
                4 nb-4
                5 nb-5
@@ -202,20 +241,24 @@
                9 nb-9)]
      (for [[^long dx ^long dy] nbs
            :let [nb [(+ x dx) (+ y dy)]]
-           :when (cnd nb)]
+           :when (pred nb)]
        nb))))
+
 
 
 
 
 ;; ### 3D grids
 
-(defn neighbours-3d [[^long x ^long y ^long z]]
+(defn neighbours-3d
+  "Six neighbours of a 3D point, two in each direction."
+  [[^long x ^long y ^long z]]
   [[(dec x) y z] [(inc x) y z]
    [x (dec y) z] [x (inc y) z]
    [x y (dec z)] [x y (inc z)]])
 
 (defn inside-3d?
+  "Check if a 3D point (x, y, z) is inside of a cube of a given size."
   ([size [x y z]] (inside-3d? size x y z))
   ([size x y z]
    (and (< -1 x size)
@@ -228,7 +271,10 @@
 
 ;; ## Graph traversal
 
-(def empty-queue clojure.lang.PersistentQueue/EMPTY)
+(def empty-queue
+  "An easier-to-type way to create an empty queue."
+  clojure.lang.PersistentQueue/EMPTY)
+
 
 (defn- build-path [current seen]
   (loop [curr current
@@ -240,6 +286,7 @@
 
 (defn- traverse
   "General graph traversal function. Not very performant.
+
   The simplest version needs just `:start`, `:end` and `:walls` keys,
   and either `:nb-num` (number of neighbours to consider) or a custom
   `:nb-func`."
@@ -336,21 +383,15 @@
 
 ;; ## Utilities
 
-(defn transpose [matrix]
+(defn transpose
+  "Transform a matrix of rows into a matrix of columns."
+  [matrix]
   (apply mapv vector matrix))
 
-(defn indexed [coll]
+(defn indexed
+  "Create a seq of `[idx el]` pairs from a `coll`."
+  [coll]
   (map-indexed vector coll))
-
-(defn invert-tree [tree]
-  (reduce-kv
-   (fn [acc k vs]
-     (reduce (fn [acc v]
-               (update acc v conj k))
-             acc
-             vs))
-   {}
-   tree))
 
 (defn count-if
   "An alternative to `(count (filter ...))`."
@@ -371,22 +412,35 @@
        (swap! counter# inc))
      @counter#))
 
-(defn sum-map [f xs]
+(defn sum-map
+  "Map a function to a collection and take a sum of the results."
+  [f xs]
   (transduce (map f) + xs))
 
-(defn sum-map-indexed [f xs]
+(defn sum-map-indexed
+  "Map a function (which takes two arguments `idx` and `el`)
+  to a collection and take a sum of the results."
+  [f xs]
   (transduce (map-indexed f) + xs))
 
-(defn sum-pmap [f xs]
+(defn sum-pmap
+  "Parallel map a function to a collection and take a sum of the results."
+  [f xs]
   (reduce + (pmap f xs)))
 
-(defn prod-map [f xs]
+(defn prod-map
+  "Map a function to a collection and take a product of the results."
+  [f xs]
   (transduce (map f) * xs))
 
-(defn max-map [f xs]
+(defn max-map
+  "Map a function to a collection and find a maximum value of the results."
+  [f xs]
   (reduce max (map f xs)))
 
-(defn max-pmap [f xs]
+(defn max-pmap
+  "Parallel map a function to a collection and find a maximum value of the results."
+  [f xs]
   (reduce max (pmap f xs)))
 
 (defn find-first
