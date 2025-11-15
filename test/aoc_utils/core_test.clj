@@ -82,8 +82,6 @@
 (def pt1 [2 3])
 (def pt2 [7 -5])
 
-(defn test-neighbours [pt amount result]
-  (is (= result (set (aoc/neighbours amount pt)))))
 
 (deftest points
   (testing "points"
@@ -114,22 +112,25 @@
     (is (not (aoc/inside? 10 20 17 9))))
 
   (testing "neighbours"
-    (test-neighbours pt1 4 #{      [2 2]
-                             [1 3]       [3 3]
-                                   [2 4]})
+    (is (= #{      [2 2]
+             [1 3]       [3 3]
+                   [2 4]}       (set (aoc/neighbours-4 pt1))))
 
-    (test-neighbours pt1 5 #{      [2 2]
-                             [1 3] [2 3] [3 3]
-                                   [2 4]})
+    (is (= #{[1 3]       [3 3]} (set (aoc/neighbours-4 pt1 (fn [[x _]] (not= x 2))))))
 
-    (test-neighbours pt1 8 #{[1 2] [2 2] [3 2]
-                             [1 3]       [3 3]
-                             [1 4] [2 4] [3 4]})
+    (is (= #{[1 2]       [3 2]
 
-    (test-neighbours pt1 9 #{[1 2] [2 2] [3 2]
-                             [1 3] [2 3] [3 3]
-                             [1 4] [2 4] [3 4]})))
+             [1 4]       [3 4]} (set (aoc/diagonals pt1))))
 
+    (is (= #{[1 2]       [3 2]} (set (aoc/diagonals pt1 (fn [[_ y]] (not= y 4))))))
+
+    (is (= #{[1 2] [2 2] [3 2]
+             [1 3]       [3 3]
+             [1 4] [2 4] [3 4]} (set (aoc/neighbours-8 pt1))))
+
+    (is (= #{[1 2] [2 2] [3 2]
+             [1 3]
+             [1 4]       [3 4]} (set (aoc/neighbours-8 pt1 (fn [[x y]] (not= 6 (+ x y)))))))))
 
 
 (def pt3 [7 -2 4])

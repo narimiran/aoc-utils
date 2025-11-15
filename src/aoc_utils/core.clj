@@ -192,25 +192,23 @@
         (< -1 y size-y))))
 
 
-
-
-(def ^:const nb-4
+(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-4
   "Four neighbours of a 2D point."
   [[0 -1] [-1 0] [1 0] [0 1]])
 
-(def ^:const diags
+(def ^{:const true :no-doc true :deprecated "v0.5.0"} diags
   "Diagonal neighbours of a 2D point."
   [[-1 -1] [1 -1] [-1 1] [1 1]])
 
-(def ^:const nb-5
+(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-5
   "Four neighbours plus a 2D point."
   (conj nb-4 [0 0]))
 
-(def ^:const nb-8
+(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-8
   "Eight neighbours of a 2D point."
   (into nb-4 diags))
 
-(def ^:const nb-9
+(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-9
   "Eight neighbours plus a 2D point."
   (conj nb-8 [0 0]))
 
@@ -218,7 +216,10 @@
 (defn neighbours
   "4/5/8/9 neighbours of a 2D point.
 
-  Return only those neighbours which satisfy `pred`."
+  Return only those neighbours which satisfy `pred`.
+
+  Deprecated: Use `neighbours-4` or `neighbours-8` instead."
+  {:deprecated "v0.5.0"}
   (^longs [^long amount pt] (neighbours amount pt identity))
   (^longs [^long amount [^long x ^long y] pred]
    (let [nbs (case amount
@@ -230,6 +231,42 @@
            :let [nb [(+ x dx) (+ y dy)]]
            :when (pred nb)]
        nb))))
+
+
+
+(defn neighbours-4
+  "Four neighbours of a 2D point.
+
+  If `pred` is specified, returns only those neighbours that satisfy it."
+  (^longs [[^long x ^long y]]
+   [[x (dec y)] [(dec x) y] [(inc x) y] [x (inc y)]])
+  (^longs [pt pred]
+   (filterv pred (neighbours-4 pt))))
+
+
+(defn diagonals
+  "Four diagonal neighbours of a 2D point.
+
+  If `pred` is specified, returns only those neighbours that satisfy it."
+  (^longs [[^long x ^long y]]
+   [[(dec x) (dec y)] [(inc x) (dec y)] [(dec x) (inc y)] [(inc x) (inc y)]])
+  (^longs [pt pred]
+   (filterv pred (diagonals pt))))
+
+
+(defn neighbours-8
+  "Eight neighbours of a 2D point.
+
+  If `pred` is specified, returns only those neighbours that satisfy it."
+  (^longs [pt] (neighbours-8 pt identity))
+  (^longs [[^long x ^long y] pred]
+   (for [x' (range (- x 1) (+ x 2))
+         y' (range (- y 1) (+ y 2))
+         :let [nb [x' y']]
+         :when (and (not= nb [x y])
+                    (pred nb))]
+     nb)))
+
 
 
 
@@ -321,7 +358,11 @@
                     size #(inside? size %)
                     (and size-x size-y) (fn [[x y]] (inside? size-x size-y x y))
                     :else (constantly true))
-        nb-filter (every-pred inbounds? (complement walls) nb-cond)]
+        nb-filter (every-pred inbounds? (complement walls) nb-cond)
+        neighbours (case nb-num
+                     4 neighbours-4
+                     8 neighbours-8
+                     (throw (Exception. "aoc: wrong number of neighbours")))]
     (loop [queue (case algo
                    :dfs    (list [start 0])
                    :bfs    (conj empty-queue [start 0])
@@ -354,7 +395,7 @@
           :else
           (let [nbs (if nb-func
                       (filter (every-pred nb-filter seen-filter) (nb-func current))
-                      (neighbours nb-num current (every-pred nb-filter seen-filter)))
+                      (neighbours current (every-pred nb-filter seen-filter)))
                 nbs+costs (map (fn [pt] [pt (nb-cost pt)]) nbs)]
             (recur
              (reduce (fn [q [pt ^long cost]]

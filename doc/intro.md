@@ -115,7 +115,8 @@ Here are some functions that help us with points in 2D grids:
 - [`left-turn`](aoc-utils.core.html#var-left-turn)
 - [`right-turn`](aoc-utils.core.html#var-right-turn)
 - [`inside?`](aoc-utils.core.html#var-inside.3F)
-- [`neighbours`](aoc-utils.core.html#var-neighbours)
+- [`neighbours-4`](aoc-utils.core.html#var-neighbours-4)
+- [`neighbours-8`](aoc-utils.core.html#var-neighbours-8)
 
 
 
