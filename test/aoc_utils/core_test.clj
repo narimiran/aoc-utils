@@ -69,7 +69,8 @@
     (is (= custom-hashed-walls (aoc/grid->hashed-point-map grid #{\#} 100))))
 
   (testing "vec->set"
-    (is (= (set (keys walls)) (aoc/grid->point-set grid #{\#}))))
+    (is (= (set (keys walls)) (aoc/grid->point-set grid #{\#})))
+    (is (= (set (keys hashed-walls)) (aoc/grid->hashed-point-set grid #{\#}))))
 
   (testing "points->lines"
     (is (= grid-print (aoc/points->lines walls)))
@@ -249,7 +250,10 @@
     (is (= 2 (aoc/find-first even? evens)))
     (is (nil? (aoc/find-first odd? evens)))
     (is (= 21 (aoc/find-first odd? stevens))))
-
+  (testing "find-first-index"
+    (is (= 0 (aoc/find-first-index even? evens)))
+    (is (nil? (aoc/find-first-index odd? evens)))
+    (is (= 3 (aoc/find-first-index odd? stevens))))
   (testing "gcd"
     (is (= 1 (aoc/gcd 2 3)))
     (is (= 4 (aoc/gcd 4 12)))
@@ -271,8 +275,15 @@
   (testing "sign"
     (is (zero? (aoc/sign 0)))
     (is (= 1 (aoc/sign 2)))
-    (is (= -1 (aoc/sign -2)))))
+    (is (= -1 (aoc/sign -2))))
 
+  (testing "divisible"
+    (is (aoc/divisible? 6 2))
+    (is (aoc/divisible? 6 -2))
+    (is (aoc/divisible? -6 2))
+    (is (aoc/divisible? -6 -2))
+    (is (not (aoc/divisible? 7 2)))
+    (is (not (aoc/divisible? -7 2)))))
 
 
 (def d {:a {:b 2}

@@ -94,7 +94,6 @@
   "Convert a 2D list of points to a {[x y]: char} hashmap.
 
   Keep only the points that satisfy a `pred`."
-  ([v] (grid->point-map v identity nil))
   ([v pred] (grid->point-map v pred nil))
   ([v pred mult]
    (into (if mult (i/int-map) {})
@@ -107,7 +106,6 @@
 
 (defn grid->hashed-point-map
   "Convert a 2D list of points to a {hash: char} hashmap."
-  ([v] (grid->point-map v identity 1000))
   ([v pred] (grid->point-map v pred 1000))
   ([v pred mult] (grid->point-map v pred mult)))
 
@@ -116,7 +114,6 @@
   "Convert a 2D list of points to a #{[x y]} set.
 
   Keep only the points that satisfy a `pred`."
-  ([v] (grid->point-set v identity nil))
   ([v pred] (grid->point-set v pred nil))
   ([v pred mult]
    (into (if mult (i/dense-int-set) #{})
@@ -129,7 +126,6 @@
 
 (defn grid->hashed-point-set
   "Convert a 2D list of points to a #{hash} set."
-  ([v] (grid->point-set v identity 1000))
   ([v pred] (grid->point-set v pred 1000))
   ([v pred mult] (grid->point-set v pred mult)))
 
@@ -469,6 +465,15 @@
    nil
    xs))
 
+(defn find-first-index
+  "Returns the index of the first element which satisfies the predicate."
+  [pred xs]
+  (reduce-kv
+   (fn [_ idx x]
+     (when (pred x) (reduced idx)))
+   nil
+   xs))
+
 
 (defn gcd
   "Greatest common divisor."
@@ -507,6 +512,8 @@
     (neg? x) -1
     :else 0))
 
+(defn divisible? [^long n ^long d]
+  (zero? ^long (mod n d)))
 
 
 
