@@ -70,7 +70,11 @@
 
 (deftest grids
   (testing "create grid"
-    (is (= walls (:walls (aoc/create-grid grid {\# :walls}))))
+    (let [g (aoc/create-grid grid {\# :walls})]
+      (is (= walls (:walls g)))
+      (is (= 3 (:width g)))
+      (is (= 3 (:height g)))
+      (is (= 3 (:size g))))
     (is (= hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls}))))
     (is (= custom-hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls} 100)))))
 
@@ -80,7 +84,10 @@
                                      #{\a \b \c} :letters})]
       (is (= walls (:walls g)))
       (is (= numbers (:numbers g)))
-      (is (= letters (:letters g)))))
+      (is (= letters (:letters g)))
+      (is (= 4 (:width g)))
+      (is (= 3 (:height g)))
+      (is (nil? (:size g)))))
 
   (testing "points->lines"
     (is (= grid-print (aoc/points->lines walls)))

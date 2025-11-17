@@ -119,8 +119,11 @@
            acc))
        acc
        (vec row)))
-    {:height (count v)
-     :width  (count (first v))}
+    (let [h (count v)
+          w (count (first v))]
+      {:height h
+       :width  w
+       :size (if (= h w) h nil)})
     v)))
 
 (defn create-grid
