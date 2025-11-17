@@ -55,22 +55,32 @@
 
 
 
-
-(def grid ["#.." "..#" "##."])
+(def input-grid "#..\n..#\n##.")
+(def grid (aoc/parse-lines input-grid :chars))
 (def grid-print "█  \n  █\n██ ")
 (def walls {[0 0] \# , [2 1] \# , [0 2] \# , [1 2] \#})
 (def hashed-walls {0 \# , 1002 \# , 2000 \# , 2001 \#})
 (def custom-hashed-walls {0 \# , 102 \# , 200 \# , 201 \#})
 
-(deftest grids
-  (testing "vec->map"
-    (is (= walls (aoc/grid->point-map grid #{\#})))
-    (is (= hashed-walls (aoc/grid->hashed-point-map grid #{\#})))
-    (is (= custom-hashed-walls (aoc/grid->hashed-point-map grid #{\#} 100))))
+(def input-grid-2 "#123\n4.#5\n##bc")
+(def grid-2 (aoc/parse-lines input-grid-2 :chars))
+(def numbers {[1 0] \1 [2 0] \2 [3 0] \3
+              [0 1] \4 [3 1] \5})
+(def letters {[2 2] \b [3 2] \c})
 
-  (testing "vec->set"
-    (is (= (set (keys walls)) (aoc/grid->point-set grid #{\#})))
-    (is (= (set (keys hashed-walls)) (aoc/grid->hashed-point-set grid #{\#}))))
+(deftest grids
+  (testing "create grid"
+    (is (= walls (:walls (aoc/create-grid grid {\# :walls}))))
+    (is (= hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls}))))
+    (is (= custom-hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls} 100)))))
+
+  (testing "create grid 2"
+    (let [g (aoc/create-grid grid-2 {\# :walls
+                                     Character/isDigit :numbers
+                                     #{\a \b \c} :letters})]
+      (is (= walls (:walls g)))
+      (is (= numbers (:numbers g)))
+      (is (= letters (:letters g)))))
 
   (testing "points->lines"
     (is (= grid-print (aoc/points->lines walls)))

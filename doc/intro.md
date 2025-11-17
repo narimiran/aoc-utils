@@ -7,15 +7,15 @@ use for solving Advent of Code (AoC) tasks.
 ## Highlights
 
 - Read the contents of an input file with `aoc/read-input`.
-  This is usually just `(aoc/read-input 1)`, and if I need to
+  This is usually just `(aoc/read-input 1)`, and if you need to
   read the file containing test input, e.g. `01_test.txt`
-  then I use `(aoc/read-input "01_test")`
+  then use `(aoc/read-input "01_test")`
 - The input file usually contains multiple lines of data,
   which are parsed with the `parse-lines` function.
   For the details on how to parse different datatypes, see below.
 - A very frequent task type is the one where we have a 2D-grid.
   For converting the input to a datatype that can be easily
-  used as a grid, see `grid->point-map` and `grid->point-set` functions.
+  used as a grid, see `create-grid` function.
   There are also some helpers to manipulate 2D points,
   `pt+`, `pt-`, `pt*`, and their 3D equivalents (`pt-3d+`, etc.).
 - Some tasks are graph traversal problems, and for those
@@ -85,17 +85,18 @@ We have a function for that too:
 ## Grids
 
 AoC wouldn't be AoC if there aren't many tasks where you're given a 2D
-grid (sometimes even 3D).
+grid (sometimes even 3D).\
+It is important to have a usable representation of a grid.
 
-It is important to have a usable representation of a grid.\
-Sometimes we need to know a character at each coordinate
-and we can use the
-([`grid->point-map`](aoc-utils.core.html#var-grid-.3Epoint-map)) function
-to represent the grid,
-the other times only the coordinates are important and we can use the
-([`grid->point-set`](aoc-utils.core.html#var-grid-.3Epoint-set)) function.\
-For both functions, we can only keep the coordinates that satisfy the `pred` function.
+If a grid is dense, e.g. we want to keep all points in a grid, it is
+the best to keep it as a 2D vector of characters.
+We can use the 
+[`grid-get`](aoc-utils.core.html#var-grid-get) function to get a character
+at y-row, x-col.
 
+If a grid is sparse, e.g. we only need to know positions of walls and/or
+several other characters, we can create a hashmap representation of a grid
+with the [`create-grid`](aoc-utils.core.html#var-create-grid) function.
 
 Sometimes we need to inspect a grid.
 With the [`points->lines`](aoc-utils.core.html#var-points-.3Elines) function,

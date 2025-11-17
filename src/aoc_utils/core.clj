@@ -14,7 +14,8 @@
   Assumes:
 
   - inputs are in the sibling `../inputs` directory
-  - inputs have `.txt` extension"
+  - inputs have `.txt` extension
+  - if passing a single digit as a parameter, it zero-pads it"
   [file]
   (let [name (if (int? file)
                (format "%02d" file)
@@ -90,23 +91,73 @@
 
 ;; ## Grids
 
+(defn grid-get
+  "Get an element in `y` row, `x` col of a vector representation of a grid.
+
+  Returns `nil` on an point which is out of bounds."
+  ([grid [x y]] (grid-get grid x y))
+  ([grid x y]
+   (try ((grid y) x)
+        (catch IndexOutOfBoundsException _
+          nil))))
+
+
+(defn- create-grid-aux
+  "Create a hashmap representation of a grid from a 2D vector."
+  ([v preds multi]
+   (reduce-kv
+    (fn [acc j row]
+      (reduce-kv
+       (fn [acc i c]
+         (if-let [found (some (fn [[k v]]
+                                (when (if (char? k) (= k c) (k c)) v))
+                              preds)]
+           (update acc found (fnil conj (if multi (i/int-map) {}))
+                   (if multi
+                     [(+ (* j ^long multi) i) c]
+                     [[i j] c]))
+           acc))
+       acc
+       (vec row)))
+    {:height (count v)
+     :width  (count (first v))}
+    v)))
+
+(defn create-grid
+  "Create a hashmap representation of a grid from a 2D vector,
+  where `preds` is a map from a predicate (set, function, character)
+  to its name, e.g. `{\\# :walls}`."
+  ([v preds] (create-grid-aux v preds nil)))
+
+(defn create-hashed-grid
+  "Create a hashmap representation of a grid from a 2D vector, where each
+  coordinate is represented as `x + multi*y` (default multi: 1000) and
+  where `preds` is a map from a predicate (set, function, character)
+  to its name, e.g. `{\\# :walls}`."
+  ([v preds] (create-grid-aux v preds 1000))
+  ([v preds multi] (create-grid-aux v preds multi)))
+
+
+
 (defn grid->point-map
   "Convert a 2D list of points to a {[x y]: char} hashmap.
 
   Keep only the points that satisfy a `pred`."
+  {:deprecated "v0.6.0: use `create-grid`"}
   ([v] (grid->point-map v identity nil))
   ([v pred] (grid->point-map v pred nil))
   ([v pred mult]
    (into (if mult (i/int-map) {})
          (for [[^long y line] (map-indexed vector v)
-               [^long x char] (map-indexed vector line)
-               :when (pred char)]
+               [^long x c] (map-indexed vector line)
+               :when (pred c)]
            (if mult
-             [(+ (* y ^long mult) x) char]
-             [[x y] char])))))
+             [(+ (* y ^long mult) x) c]
+             [[x y] c])))))
 
 (defn grid->hashed-point-map
   "Convert a 2D list of points to a {hash: char} hashmap."
+  {:deprecated "v0.6.0: use `create-hashed-grid`"}
   ([v] (grid->point-map v identity 1000))
   ([v pred] (grid->point-map v pred 1000))
   ([v pred mult] (grid->point-map v pred mult)))
@@ -116,19 +167,21 @@
   "Convert a 2D list of points to a #{[x y]} set.
 
   Keep only the points that satisfy a `pred`."
+  {:deprecated "v0.6.0: use `create-grid`"}
   ([v] (grid->point-set v identity nil))
   ([v pred] (grid->point-set v pred nil))
   ([v pred mult]
    (into (if mult (i/dense-int-set) #{})
          (for [[^long y line] (map-indexed vector v)
-               [^long x char] (map-indexed vector line)
-               :when (pred char)]
+               [^long x c] (map-indexed vector line)
+               :when (pred c)]
            (if mult
              (+ (* y ^long mult) x)
              [x y])))))
 
 (defn grid->hashed-point-set
   "Convert a 2D list of points to a #{hash} set."
+  {:deprecated "v0.6.0: use `create-hashed-grid`"}
   ([v] (grid->point-set v identity 1000))
   ([v pred] (grid->point-set v pred 1000))
   ([v pred mult] (grid->point-set v pred mult)))
@@ -220,10 +273,8 @@
 (defn neighbours
   "4/5/8/9 neighbours of a 2D point.
 
-  Return only those neighbours which satisfy `pred`.
-
-  Deprecated: Use `neighbours-4` or `neighbours-8` instead."
-  {:deprecated "v0.5.0"}
+  Return only those neighbours which satisfy `pred`."
+  {:deprecated "v0.5.0: use `neigbhours-4` or `neighbours-8`"}
   (^longs [^long amount pt] (neighbours amount pt identity))
   (^longs [^long amount [^long x ^long y] pred]
    (let [nbs (case amount
