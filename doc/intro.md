@@ -147,11 +147,13 @@ rather than a specific one written for the task at hand.
 
 If this gets used, the implementation details will probably change,
 depending on the specific tasks.
-(As if the (private) `traverse` function is not already way too long
-and complicated.
+As if the [`traverse`](aoc-utils.core.html#var-dfs) function
+is not already way too long and complicated.
 
 All four algorithms (`DFS`, `BFS`, `Dijkstra`, `A*`) share the same logic,
-the difference is in a `queue` type, they are available as functions:
+the difference is in a `queue` type.
+They can be passed as a first argument to the `traverse` function, and
+they are also available as separate functions:
 
 - [`dfs`](aoc-utils.core.html#var-dfs)
 - [`bfs`](aoc-utils.core.html#var-bfs)

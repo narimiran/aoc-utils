@@ -392,12 +392,22 @@
       (recur (first (seen curr)) (conj path curr)))))
 
 
-(defn- traverse
-  "General graph traversal function. Not very performant.
+(defn traverse
+  "General graph traversal function. Not very performant. Not very pretty.
 
   The simplest version needs just `:start`, `:end` and `:walls` keys,
   and either `:nb-num` (number of neighbours to consider) or a custom
-  `:nb-func`."
+  `:nb-func`.
+
+  The list of possible keys passed in the options map is quite large:
+  ```
+  [start end walls size size-x size-y
+   nb-func nb-num nb-cond end-cond
+   cost-fn heuristic steps-limit
+   allow-revisits? side-effect]
+  ```
+
+  It's best to read the function's source code to understand what each does."
   [algo {:keys [start end walls size size-x size-y
                 nb-func nb-num nb-cond end-cond
                 cost-fn heuristic steps-limit
@@ -470,22 +480,30 @@
 
 
 (defn dfs
-  "Traverse a graph using the DFS alorithm."
+  "Traverse a graph using the DFS alorithm.
+
+  See [[traverse]] for more details."
   [options]
   (traverse :dfs options))
 
 (defn bfs
-  "Traverse a graph using the BFS alorithm."
+  "Traverse a graph using the BFS alorithm.
+
+  See [[traverse]] for more details."
   [options]
   (traverse :bfs options))
 
 (defn a-star
-  "Traverse a graph using the A* alorithm."
+  "Traverse a graph using the A* alorithm.
+
+  See [[traverse]] for more details."
   [options]
   (traverse :a-star options))
 
 (defn dijkstra
-  "Traverse a graph using the Dijkstra's alorithm."
+  "Traverse a graph using the Dijkstra's alorithm.
+
+  See [[traverse]] for more details."
   [options]
   (traverse :dijk options))
 
@@ -611,7 +629,9 @@
     (neg? x) -1
     :else 0))
 
-(defn divisible? [^long n ^long d]
+(defn divisible?
+  "Check if `n` is divisible by `n`."
+  [^long n ^long d]
   (zero? ^long (mod n d)))
 
 
