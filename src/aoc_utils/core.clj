@@ -542,33 +542,33 @@
        (swap! counter# inc))
      @counter#))
 
-(defn sum-map
+(defn sum-by
   "Map a function to a collection and take a sum of the results."
   [f xs]
   (transduce (map f) + xs))
 
-(defn sum-map-indexed
+(defn sum-by-indexed
   "Map a function (which takes two arguments `idx` and `el`)
   to a collection and take a sum of the results."
   [f xs]
   (transduce (map-indexed f) + xs))
 
-(defn sum-pmap
+(defn sum-byp
   "Parallel map a function to a collection and take a sum of the results."
   [f xs]
   (reduce + (pmap f xs)))
 
-(defn prod-map
+(defn prod-by
   "Map a function to a collection and take a product of the results."
   [f xs]
   (transduce (map f) * xs))
 
-(defn max-map
+(defn max-by
   "Map a function to a collection and find a maximum value of the results."
   [f xs]
   (reduce max (map f xs)))
 
-(defn max-pmap
+(defn max-byp
   "Parallel map a function to a collection and find a maximum value of the results."
   [f xs]
   (reduce max (pmap f xs)))
