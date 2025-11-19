@@ -94,12 +94,18 @@
 (defn grid-get
   "Get an element in `y` row, `x` col of a vector representation of a grid.
 
-  Returns `nil` on an point which is out of bounds."
-  ([grid [x y]] (grid-get grid x y))
-  ([grid x y]
+  Returns `default` on a point which is out of bounds, or `nil` if not specified."
+  ([grid [x y]] (grid-get grid x y nil))
+  ([grid pt default]
+   ;; Ugly: this arity matches either `[grid [x y] default]` or `[grid x y]`.
+   (if (vector? pt)
+     (let [[x y] pt]
+       (grid-get grid x y default))
+     (grid-get grid pt default nil)))
+  ([grid x y default]
    (try ((grid y) x)
         (catch IndexOutOfBoundsException _
-          nil))))
+          default))))
 
 
 (defn- create-grid-aux
@@ -123,7 +129,7 @@
           w (count (first v))]
       {:height h
        :width  w
-       :size (if (= h w) h nil)})
+       :size (when (= h w) h)})
     v)))
 
 (defn create-grid
@@ -317,11 +323,11 @@
 
   If `pred` is specified, returns only those neighbours that satisfy it."
   (^longs [pt] (neighbours-8 pt identity))
-  (^longs [[^long x ^long y] pred]
+  (^longs [[^long x ^long y :as pt] pred]
    (for [x' (range (- x 1) (+ x 2))
          y' (range (- y 1) (+ y 2))
          :let [nb [x' y']]
-         :when (and (not= nb [x y])
+         :when (and (not= nb pt)
                     (pred nb))]
      nb)))
 

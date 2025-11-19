@@ -69,6 +69,14 @@
 (def letters {[2 2] \b [3 2] \c})
 
 (deftest grids
+  (testing "grid-get"
+    (is (= \# (aoc/grid-get grid [0 0])))
+    (is (= \# (aoc/grid-get grid 0 0)))
+    (is (nil? (aoc/grid-get grid [-1 0])))
+    (is (nil? (aoc/grid-get grid -1 0)))
+    (is (= :foo (aoc/grid-get grid [-1 0] :foo)))
+    (is (= :foo (aoc/grid-get grid -1 0 :foo))))
+
   (testing "create grid"
     (let [g (aoc/create-grid grid {\# :walls})]
       (is (= walls (:walls g)))
@@ -269,7 +277,7 @@
     (is (nil? (aoc/find-first odd? evens)))
     (is (= 21 (aoc/find-first odd? stevens))))
   (testing "find-first-index"
-    (is (= 0 (aoc/find-first-index even? evens)))
+    (is (zero? (aoc/find-first-index even? evens)))
     (is (nil? (aoc/find-first-index odd? evens)))
     (is (= 3 (aoc/find-first-index odd? stevens))))
   (testing "gcd"
