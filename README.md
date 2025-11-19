@@ -24,7 +24,7 @@ Add the following to your `deps.edn` file:
   ,,,
   ; check the latest tag and sha in the releases/tags: 
   ; https://github.com/narimiran/aoc-utils/tags
-  com.github.narimiran/aoc-utils {:git/tag "v0.4.0" :git/sha "1a0be80"}
+  com.github.narimiran/aoc-utils {:git/tag "v0.7.0" :git/sha "2d61b29"}
 }
 ```
 
@@ -35,6 +35,9 @@ Add the following to your `deps.edn` file:
 ``` clojure
 (ns day01
   (:require [aoc-utils.core :as aoc]))
+
+(->> (aoc/parse-lines (aoc/read-input 1) row-parsing-function)
+     (aoc/sum-by row-function)
 ```
 
 
@@ -56,3 +59,33 @@ I like to visually inspect the input file before I manually copy it.
 
 If I get the information that this repo has more users than just myself
 (and they would like to have it), I'll consider adding it.
+
+
+&nbsp;
+
+
+> Why does the `read-input` function use (this) hard-coded location of inputs?
+
+Because my AoC repos usually contain solutions in multiple languages and I keep
+inputs external to all of them, like this:
+
+``` shell
+.
+├── clojure
+│   ├── deps.edn
+│   └── src
+│       ├── day01.clj
+│       └── day02.clj
+├── inputs
+│   ├── 01.txt
+│   └── 02.txt
+├── python
+│   ├── day01.py
+│   └── day02.py
+├── LICENSE.txt
+└── README.md
+```
+
+If your repo has a different structure, it is probably the best to not use the
+`read-input` function and to use `slurp` directly.
+Or write your own version of the function.

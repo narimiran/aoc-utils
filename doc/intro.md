@@ -6,25 +6,42 @@ use for solving Advent of Code (AoC) tasks.
 
 ## Highlights
 
-- Read the contents of an input file with `aoc/read-input`.
+- Read the contents of an input file with
+  [`read-input`](aoc-utils.core.html#var-read-input).
   This is usually just `(aoc/read-input 1)`, and if you need to
   read the file containing test input, e.g. `01_test.txt`
   then use `(aoc/read-input "01_test")`
 - The input file usually contains multiple lines of data,
-  which are parsed with the `parse-lines` function.
+  which are parsed with the
+  [`parse-lines`](aoc-utils.core.html#var-parse-lines) function.
   For the details on how to parse different datatypes, see below.
-- A very frequent task type is the one where we have a 2D-grid.
+  To parse a single-line input, [`parse-input`](aoc-utils.core.html#var-parse-input)
+  can be used.
+- A frequent task type is the one where we have a 2D-grid.
   For converting the input to a datatype that can be easily
-  used as a grid, see `create-grid` function.
+  used as a grid, see the
+  [`create-grid`](aoc-utils.core.html#var-create-grid) function.
   There are also some helpers to manipulate 2D points,
-  `pt+`, `pt-`, `pt*`, and their 3D equivalents (`pt-3d+`, etc.).
+  [`pt+`](aoc-utils.core.html#var-pt.2B), [`pt-`](aoc-utils.core.html#var-pt-),
+  [`pt*`](aoc-utils.core.html#var-pt*), and their 3D equivalents
+  ([`pt-3d+`](aoc-utils.core.html#var-pt-3d.2B), etc.).
+- Early tasks often need to apply a function on each row and then
+  take a sum of the results. We can use
+  [`sum-by`](aoc-utils.core.html#var-sum-by) for that.
 - Some tasks are graph traversal problems, and for those
   there are four options: `dfs`, `bfs`, `a-star`, `dijkstra`.
   These try to be as general as possible to fit different tasks,
   but they are not as performant as a specialized function for
   a given task.
 
+In short, one of the early tasks might look like this:
+```clojure
+(->> (aoc/parse-lines (aoc/read-input 1) row-parsing-function)
+     (aoc/sum-by row-function)
+```
 
+
+&nbsp;
 
 
 ## Reading input files
@@ -37,6 +54,8 @@ function has the folowing assumptions:
   - if passing a single digit as a parameter, it zero-pads it
 
 E.g. `(read-input 1)` slurps `../inputs/01.txt` file.
+
+
 
 
 
@@ -73,7 +92,7 @@ that function to each line of the input, and there is
 
 On some rare occasions, the input is split into paragraphs by having an
 empty line between different parts of input.
-We have a function for that too: 
+We have a function for that too:
 [`aoc/parse-paragraphs`](aoc-utils.core.html#var-parse-paragraphs).
 
 
@@ -90,7 +109,7 @@ It is important to have a usable representation of a grid.
 
 If a grid is dense, e.g. we want to keep all points in a grid, it is
 the best to keep it as a 2D vector of characters.
-We can use the 
+We can use the
 [`grid-get`](aoc-utils.core.html#var-grid-get) function to get a character
 at y-row, x-col.
 
@@ -187,11 +206,11 @@ Functions for some common AoC stuff.
   In many tasks we need to apply some condition and then count
   the number of elements which satisfy it. This should be slightly faster
   (to type, at least) than `(count (filter ...))`.
-- [`sum-map`](aoc-utils.core.html#var-sum-map): 
+- [`sum-by`](aoc-utils.core.html#var-sum-by):
   Similarly, in some tasks we need to map a function to
   each element, and then take a sum of the results.
-  There are also `sum-map-indexed`, `sum-pmap`, `prod-map`,
-  `max-map` and `max-pmap` variants.
+  There are also `sum-by-indexed`, `sum-byp`, `prod-by`,
+  `max-by` and `max-byp` variants.
 - [`find-first`](aoc-utils.core.html#var-find-first):
   Returns the first element which satisfies a predicate.
   It should be slightly faster than using `(some ...)`.
