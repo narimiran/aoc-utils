@@ -135,65 +135,30 @@
 (defn create-grid
   "Create a hashmap representation of a grid from a 2D vector,
   where `preds` is a map from a predicate (set, function, character)
-  to its name, e.g. `{\\# :walls}`."
+  to its name, e.g. `{\\# :walls}`.
+
+  The resulting hashmap has the following keys:
+
+  - `:height`
+  - `:width`
+  - `:size` - if height and width are the same, otherwise `nil`
+  - each predicate defined in the `preds` parameter"
   ([v preds] (create-grid-aux v preds nil)))
 
 (defn create-hashed-grid
   "Create a hashmap representation of a grid from a 2D vector, where each
   coordinate is represented as `x + multi*y` (default multi: 1000) and
   where `preds` is a map from a predicate (set, function, character)
-  to its name, e.g. `{\\# :walls}`."
+  to its name, e.g. `{\\# :walls}`.
+
+  The resulting hashmap has the following keys:
+
+  - `:height`
+  - `:width`
+  - `:size` - if height and width are the same, otherwise `nil`
+  - each predicate defined in the `preds` parameter"
   ([v preds] (create-grid-aux v preds 1000))
   ([v preds multi] (create-grid-aux v preds multi)))
-
-
-
-(defn grid->point-map
-  "Convert a 2D list of points to a {[x y]: char} hashmap.
-
-  Keep only the points that satisfy a `pred`."
-  {:deprecated "v0.6.0: use `create-grid`"}
-  ([v] (grid->point-map v identity nil))
-  ([v pred] (grid->point-map v pred nil))
-  ([v pred mult]
-   (into (if mult (i/int-map) {})
-         (for [[^long y line] (map-indexed vector v)
-               [^long x c] (map-indexed vector line)
-               :when (pred c)]
-           (if mult
-             [(+ (* y ^long mult) x) c]
-             [[x y] c])))))
-
-(defn grid->hashed-point-map
-  "Convert a 2D list of points to a {hash: char} hashmap."
-  {:deprecated "v0.6.0: use `create-hashed-grid`"}
-  ([v] (grid->point-map v identity 1000))
-  ([v pred] (grid->point-map v pred 1000))
-  ([v pred mult] (grid->point-map v pred mult)))
-
-
-(defn grid->point-set
-  "Convert a 2D list of points to a #{[x y]} set.
-
-  Keep only the points that satisfy a `pred`."
-  {:deprecated "v0.6.0: use `create-grid`"}
-  ([v] (grid->point-set v identity nil))
-  ([v pred] (grid->point-set v pred nil))
-  ([v pred mult]
-   (into (if mult (i/dense-int-set) #{})
-         (for [[^long y line] (map-indexed vector v)
-               [^long x c] (map-indexed vector line)
-               :when (pred c)]
-           (if mult
-             (+ (* y ^long mult) x)
-             [x y])))))
-
-(defn grid->hashed-point-set
-  "Convert a 2D list of points to a #{hash} set."
-  {:deprecated "v0.6.0: use `create-hashed-grid`"}
-  ([v] (grid->point-set v identity 1000))
-  ([v pred] (grid->point-set v pred 1000))
-  ([v pred mult] (grid->point-set v pred mult)))
 
 
 
@@ -256,45 +221,6 @@
   ([size-x size-y x y]
    (and (< -1 x size-x)
         (< -1 y size-y))))
-
-
-(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-4
-  "Four neighbours of a 2D point."
-  [[0 -1] [-1 0] [1 0] [0 1]])
-
-(def ^{:const true :no-doc true :deprecated "v0.5.0"} diags
-  "Diagonal neighbours of a 2D point."
-  [[-1 -1] [1 -1] [-1 1] [1 1]])
-
-(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-5
-  "Four neighbours plus a 2D point."
-  (conj nb-4 [0 0]))
-
-(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-8
-  "Eight neighbours of a 2D point."
-  (into nb-4 diags))
-
-(def ^{:const true :no-doc true :deprecated "v0.5.0"} nb-9
-  "Eight neighbours plus a 2D point."
-  (conj nb-8 [0 0]))
-
-
-(defn neighbours
-  "4/5/8/9 neighbours of a 2D point.
-
-  Return only those neighbours which satisfy `pred`."
-  {:deprecated "v0.5.0: use `neigbhours-4` or `neighbours-8`"}
-  (^longs [^long amount pt] (neighbours amount pt identity))
-  (^longs [^long amount [^long x ^long y] pred]
-   (let [nbs (case amount
-               4 nb-4
-               5 nb-5
-               8 nb-8
-               9 nb-9)]
-     (for [[^long dx ^long dy] nbs
-           :let [nb [(+ x dx) (+ y dy)]]
-           :when (pred nb)]
-       nb))))
 
 
 
