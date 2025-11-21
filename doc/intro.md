@@ -27,7 +27,7 @@ use for solving Advent of Code (AoC) tasks.
   ([`pt-3d+`](aoc-utils.core.html#var-pt-3d.2B), etc.).
 - Early tasks often need to apply a function on each row and then
   take a sum of the results. We can use
-  [`sum-by`](aoc-utils.core.html#var-sum-by) for that.
+  [`sum-map`](aoc-utils.core.html#var-sum-map) for that.
 - Some tasks are graph traversal problems, and for those
   there are four options: `dfs`, `bfs`, `a-star`, `dijkstra`.
   These try to be as general as possible to fit different tasks,
@@ -37,7 +37,7 @@ use for solving Advent of Code (AoC) tasks.
 In short, one of the early tasks might look like this:
 ```clojure
 (->> (aoc/parse-lines (aoc/read-input 1) row-parsing-function)
-     (aoc/sum-by row-function)
+     (aoc/sum-map row-function)
 ```
 
 
@@ -206,11 +206,11 @@ Functions for some common AoC stuff.
   In many tasks we need to apply some condition and then count
   the number of elements which satisfy it. This should be slightly faster
   (to type, at least) than `(count (filter ...))`.
-- [`sum-by`](aoc-utils.core.html#var-sum-by):
+- [`sum-map`](aoc-utils.core.html#var-sum-map):
   Similarly, in some tasks we need to map a function to
   each element, and then take a sum of the results.
-  There are also `sum-by-indexed`, `sum-byp`, `prod-by`,
-  `max-by` and `max-byp` variants.
+  There are also `sum-map-indexed`, `sum-pmap`, `prod-map`,
+  `max-map` and `max-pmap` variants.
 - [`find-first`](aoc-utils.core.html#var-find-first):
   Returns the first element which satisfies a predicate.
   It should be slightly faster than using `(some ...)`.
