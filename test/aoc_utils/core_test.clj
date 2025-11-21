@@ -97,9 +97,9 @@
       (is (= 3 (:height g)))
       (is (nil? (:size g)))))
 
-  (testing "points->lines"
-    (is (= grid-print (aoc/points->lines walls)))
-    (is (= grid-print (aoc/points->lines (set (keys walls)))))))
+  (testing "show-grid"
+    (is (= grid-print (aoc/show-grid walls)))
+    (is (= grid-print (aoc/show-grid (set (keys walls)))))))
 
 
 

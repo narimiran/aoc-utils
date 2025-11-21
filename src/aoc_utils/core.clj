@@ -162,10 +162,10 @@
 
 
 
-(defn points->lines
+(defn show-grid
   "Convert a map/set representation of a grid to a printable string of points."
   [points]
-  (if (map? points) (points->lines (set (keys points)))
+  (if (map? points) (show-grid (set (keys points)))
       (let [x-lim (inc ^long (reduce max (map first points)))
             y-lim (inc ^long (reduce max (map second points)))]
         (str/join \newline

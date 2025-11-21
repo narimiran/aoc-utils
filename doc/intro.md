@@ -118,7 +118,7 @@ several other characters, we can create a hashmap representation of a grid
 with the [`create-grid`](aoc-utils.core.html#var-create-grid) function.
 
 Sometimes we need to inspect a grid.
-With the [`points->lines`](aoc-utils.core.html#var-points-.3Elines) function,
+With the [`show-grid`](aoc-utils.core.html#var-show-grid) function,
 we create a printable string of all points in the grid.
 
 
