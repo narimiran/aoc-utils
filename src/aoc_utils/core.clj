@@ -451,9 +451,13 @@
   (apply mapv vector matrix))
 
 (defn indexed
-  "Create a seq of `[idx el]` pairs from a `coll`."
-  [coll]
-  (map-indexed vector coll))
+  "Create a seq of `[idx el]` pairs from a `coll`.
+
+  If `start` is provided, it is used as a first index, otherwise 0."
+  ([coll]
+   (map-indexed vector coll))
+  ([coll start]
+   (map vector (iterate inc start) coll)))
 
 (defn count-if
   "An alternative to `(count (filter ...))`."

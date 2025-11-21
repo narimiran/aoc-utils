@@ -248,7 +248,11 @@
     (is (= [[0 10] [1 20] [2 30]]
            (aoc/indexed [10 20 30])))
     (is (= [[0 [10 20]] [1 [30 40]]]
-           (aoc/indexed [[10 20] [30 40]]))))
+           (aoc/indexed [[10 20] [30 40]])))
+    (is (= [[5 10] [6 20] [7 30]]
+           (aoc/indexed [10 20 30] 5)))
+    (is (= [[-3 [10 20]] [-2 [30 40]]]
+           (aoc/indexed [[10 20] [30 40]] -3))))
   (testing "count-if"
     (is (= 6 (aoc/count-if even? evens)))
     (is (zero? (aoc/count-if odd? evens)))
