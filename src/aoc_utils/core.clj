@@ -20,7 +20,7 @@
   (let [name (if (int? file)
                (format "%02d" file)
                file)]
-    (str/trim (slurp (str "../inputs/" name ".txt")))))
+    (str/trim-newline (slurp (str "../inputs/" name ".txt")))))
 
 
 
