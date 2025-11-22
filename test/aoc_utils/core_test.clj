@@ -79,18 +79,21 @@
 
   (testing "create grid"
     (let [g (aoc/create-grid grid {\# :walls})]
-      (is (= walls (:walls g)))
+      (is (= (set (keys walls)) (:walls g)))
       (is (= 3 (:width g)))
       (is (= 3 (:height g)))
       (is (= 3 (:size g))))
-    (is (= hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls}))))
-    (is (= custom-hashed-walls (:walls (aoc/create-hashed-grid grid {\# :walls} 100)))))
+    (is (= walls (:walls (aoc/create-grid grid {#{\#} :walls}))))
+    (is (= (set (keys hashed-walls)) (:walls (aoc/create-hashed-grid grid {\# :walls}))))
+    (is (= hashed-walls (:walls (aoc/create-hashed-grid grid {#{\#} :walls}))))
+    (is (= (set (keys custom-hashed-walls)) (:walls (aoc/create-hashed-grid grid {\# :walls} 100))))
+    (is (= custom-hashed-walls (:walls (aoc/create-hashed-grid grid {#{\#} :walls} 100)))))
 
   (testing "create grid 2"
     (let [g (aoc/create-grid grid-2 {\# :walls
                                      Character/isDigit :numbers
                                      #{\a \b \c} :letters})]
-      (is (= walls (:walls g)))
+      (is (= (set (keys walls)) (:walls g)))
       (is (= numbers (:numbers g)))
       (is (= letters (:letters g)))
       (is (= 4 (:width g)))

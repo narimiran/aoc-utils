@@ -115,13 +115,21 @@
     (fn [acc j row]
       (reduce-kv
        (fn [acc i c]
-         (if-let [found (some (fn [[k v]]
-                                (when (if (char? k) (= k c) (k c)) v))
-                              preds)]
-           (update acc found (fnil conj (if multi (i/int-map) {}))
+         (if-let [[char-key? found]
+                  (some (fn [[k v]]
+                          (let [char-key? (char? k)]
+                            (when (if char-key? (= k c) (k c))
+                              [char-key? v])))
+                        preds)]
+           (if char-key?
+             (update acc found (fnil conj (if multi (i/int-set) #{}))
                    (if multi
-                     [(+ (* j ^long multi) i) c]
-                     [[i j] c]))
+                     (+ (* j ^long multi) i)
+                     [i j]))
+             (update acc found (fnil conj (if multi (i/int-map) {}))
+                     (if multi
+                       [(+ (* j ^long multi) i) c]
+                       [[i j] c])))
            acc))
        acc
        (vec row)))
@@ -142,7 +150,9 @@
   - `:height`
   - `:width`
   - `:size` - if height and width are the same, otherwise `nil`
-  - each predicate defined in the `preds` parameter"
+  - each predicate defined in the `preds` parameter:
+    - if a predicate was a character, returns a set of points
+    - otherwise, returns a map of points to matching characters"
   ([v preds] (create-grid-aux v preds nil)))
 
 (defn create-hashed-grid
@@ -156,7 +166,9 @@
   - `:height`
   - `:width`
   - `:size` - if height and width are the same, otherwise `nil`
-  - each predicate defined in the `preds` parameter"
+  - each predicate defined in the `preds` parameter:
+    - if a predicate was a character, returns an int-set of point hashes
+    - otherwise, returns an int-map of point hashes to matching characters"
   ([v preds] (create-grid-aux v preds 1000))
   ([v preds multi] (create-grid-aux v preds multi)))
 
