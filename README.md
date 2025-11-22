@@ -24,7 +24,7 @@ Add the following to your `deps.edn` file:
   ,,,
   ; check the latest tag and sha in the releases/tags: 
   ; https://github.com/narimiran/aoc-utils/tags
-  com.github.narimiran/aoc-utils {:git/tag "v0.7.0" :git/sha "2d61b29"}
+  com.github.narimiran/aoc-utils {:git/tag "v0.8.2" :git/sha "e439cb6"}
 }
 ```
 
