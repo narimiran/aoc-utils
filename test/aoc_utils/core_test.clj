@@ -75,7 +75,9 @@
     (is (nil? (aoc/grid-get grid [-1 0])))
     (is (nil? (aoc/grid-get grid -1 0)))
     (is (= :foo (aoc/grid-get grid [-1 0] :foo)))
-    (is (= :foo (aoc/grid-get grid -1 0 :foo))))
+    (is (= :foo (aoc/grid-get grid -1 0 :foo)))
+    (is (nil? (aoc/grid-get grid nil)))
+    (is (= :foo (aoc/grid-get grid nil :foo))))
 
   (testing "create grid"
     (let [g (aoc/create-grid grid {\# :walls})]

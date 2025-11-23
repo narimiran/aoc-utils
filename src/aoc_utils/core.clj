@@ -95,13 +95,16 @@
   "Get an element in `y` row, `x` col of a vector representation of a grid.
 
   Returns `default` on a point which is out of bounds, or `nil` if not specified."
-  ([grid [x y]] (grid-get grid x y nil))
+  ([grid [x y :as pt]]
+   (when-not (nil? pt)
+     (grid-get grid x y nil)))
   ([grid pt default]
    ;; Ugly: this arity matches either `[grid [x y] default]` or `[grid x y]`.
-   (if (vector? pt)
-     (let [[x y] pt]
-       (grid-get grid x y default))
-     (grid-get grid pt default nil)))
+   (cond
+     (nil? pt)    default
+     (vector? pt) (let [[x y] pt]
+                    (grid-get grid x y default))
+     :else        (grid-get grid pt default nil)))
   ([grid x y default]
    (try ((grid y) x)
         (catch IndexOutOfBoundsException _
