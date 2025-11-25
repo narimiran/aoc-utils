@@ -74,7 +74,7 @@
   - `:digits` - extract all single digits
   - `:chars` - make a list of chars
   - `:words` - make a list of words"
-  [input & [parse-fn {:keys [word-sep nl-sep]}]]
+  [input & [parse-fn word-sep nl-sep]]
   (mapv #(parse-input % parse-fn word-sep)
         (str/split input (or nl-sep #"\n"))))
 
@@ -83,8 +83,8 @@
   "Split `input` into paragraphs (separated by a blank line).
   Parse each paragraph based on `parse-fn`."
   [input & [parse-fn word-sep]]
-  (mapv #(parse-lines % parse-fn {:word-sep word-sep})
-        (parse-lines input nil {:nl-sep #"\n\n"})))
+  (mapv #(parse-lines % parse-fn word-sep)
+        (parse-lines input nil nil #"\n\n")))
 
 
 
