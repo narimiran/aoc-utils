@@ -318,7 +318,32 @@
     (is (aoc/divisible? -6 2))
     (is (aoc/divisible? -6 -2))
     (is (not (aoc/divisible? 7 2)))
-    (is (not (aoc/divisible? -7 2)))))
+    (is (not (aoc/divisible? -7 2))))
+
+  (testing "binary search"
+    (is (zero? (aoc/binary-search 1000 0 identity)))
+    (is (= 1000 (aoc/binary-search 1000 1000 identity)))
+    (is (= 946 (aoc/binary-search 1000 946 identity)))
+    (is (= 10 (aoc/binary-search 10 946 identity)))
+    (is (= -1 (aoc/binary-search 10 -946 identity)))
+    (is (= 30 (aoc/binary-search 20 30 946 identity)))
+    (is (= 19 (aoc/binary-search 20 30 -946 identity)))
+    (is (= 946 (aoc/binary-search 200 3000 946 identity)))
+    (is (= -946 (aoc/binary-search -2000 3000 -946 identity)))
+    (is (= -10 (aoc/binary-search -10 -5 identity)))
+    (is (= -5 (aoc/binary-search -10 -1 -5 identity)))
+    (is (= 250 (aoc/binary-search 1000 500 #(* 2 %))))
+    (is (= 250 (aoc/binary-search 1000 501 #(* 2 %))))
+    (is (= 251 (aoc/binary-search 1000 502 #(* 2 %))))
+    (is (= -250 (aoc/binary-search -1000 0 -500 #(* 2 %))))
+    (is (= -251 (aoc/binary-search -1000 0 -501 #(* 2 %))))
+    (is (= -251 (aoc/binary-search -1000 0 -502 #(* 2 %))))
+    (is (= 1000 (aoc/binary-search 1000 2000 #(* 2 %))))
+    (is (= 1000 (aoc/binary-search 1000 5000 #(* 2 %))))
+    (is (= 2500 (aoc/binary-search 3000 5000 #(* 2 %))))))
+
+
+
 
 
 (def d {:a {:b 2}

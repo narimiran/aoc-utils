@@ -115,9 +115,9 @@
   "Create a hashmap representation of a grid from a 2D vector."
   ([v preds multi]
    (reduce-kv
-    (fn [acc j row]
+    (fn [acc ^long j row]
       (reduce-kv
-       (fn [acc i c]
+       (fn [acc ^long i c]
          (if-let [[char-key? found]
                   (some (fn [[k v]]
                           (let [char-key? (char? k)]
@@ -584,6 +584,23 @@
   "Check if `n` is divisible by `n`."
   [^long n ^long d]
   (zero? ^long (mod n d)))
+
+
+(defn binary-search
+  "Find a number between `lo` and `hi` which gives `target` as a result of
+  applying `func` to it."
+  (^long [hi target func] (binary-search 0 hi target func))
+  (^long [^long lo ^long hi ^long target func]
+   (loop [lo lo
+          hi hi]
+     (if (> lo hi)
+       hi
+       (let [mid (quot (+ lo hi) 2)
+             res (func mid)]
+         (case (compare res target)
+           0  mid
+           -1 (recur (inc mid) hi)
+           1  (recur lo (dec mid))))))))
 
 
 
