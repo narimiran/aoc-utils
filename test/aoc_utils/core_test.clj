@@ -23,8 +23,10 @@
   (testing "ints"
     (test-parsing int-lines         ["123" "-456" "789"])
     (test-parsing int-lines :int    [123 -456 789])
+    (test-parsing int-lines :nats   [[123] [456] [789]])
     (test-parsing int-lines :digits [[1 2 3] [4 5 6] [7 8 9]])
-    (test-parsing ints-lines :ints  [[1 2 3] [4 -5 6] [7 8 9]]))
+    (test-parsing ints-lines :ints  [[1 2 3] [4 -5 6] [7 8 9]])
+    (test-parsing ints-lines :nats  [[1 2 3] [4 5 6] [7 8 9]]))
   (testing "chars"
     (test-parsing char-lines        ["abc" "def" "ghi"])
     (test-parsing char-lines :chars [[\a \b \c] [\d \e \f] [\g \h \i]]))

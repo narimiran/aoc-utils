@@ -49,6 +49,7 @@
 
   - `:int` - parse a single integer
   - `:ints`- get all integers
+  - `:nats` - get all natural numbers, i.e. ignore the `-` sign
   - `:digits` - extract all single digits
   - `:chars` - make a list of chars
   - `:words` - make a list of words"
@@ -56,6 +57,7 @@
   (let [f (case parse-fn
             :int    parse-long
             :ints   integers
+            :nats   #(integers % {:negative? false})
             :digits string->digits
             :chars  vec
             :words  #(str/split % (or word-sep #" "))
