@@ -7,7 +7,7 @@
 (def int-lines "123\n-456\n789")
 (def ints-lines "1 2 3\n4 -5 6\n7 8 9")
 (def char-lines "abc\ndef\nghi")
-(def word-lines "a b c\nd e f\ng h i")
+(def word-lines "a  b c\nd e  f\ng   h   i")
 (def comma-sep "ab cd,ef gh\nij kl,mn op")
 (def int-paragraphs "1,2\n3,4\n\n5,6\n7,8")
 
@@ -31,7 +31,7 @@
     (test-parsing char-lines        ["abc" "def" "ghi"])
     (test-parsing char-lines :chars [[\a \b \c] [\d \e \f] [\g \h \i]]))
   (testing "words"
-    (test-parsing word-lines        ["a b c" "d e f" "g h i"])
+    (test-parsing word-lines        ["a  b c" "d e  f" "g   h   i"])
     (test-parsing word-lines :words [["a" "b" "c"] ["d" "e" "f"] ["g" "h" "i"]]))
   (testing "custom func"
     (test-parsing int-lines #(mod (abs (parse-long %)) 10) [3 6 9]))

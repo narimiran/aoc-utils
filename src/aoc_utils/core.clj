@@ -60,7 +60,7 @@
             :nats   #(integers % {:negative? false})
             :digits string->digits
             :chars  vec
-            :words  #(str/split % (or word-sep #" "))
+            :words  #(str/split % (or word-sep #"\s+"))
             nil     identity
             parse-fn)]
     (f s)))
