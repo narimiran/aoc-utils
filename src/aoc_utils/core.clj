@@ -43,6 +43,12 @@
        (map parse-long)
        (filterv some?)))
 
+(defn words
+  "Split a string into words, based on `word-sep`. If `word-sep` is
+  not provided, it splits on (multiple) whitespace."
+  [s & [word-sep]]
+  (str/split s (or word-sep #"\s+")))
+
 (defn parse-input
   "Parse input string, based on `parse-fn`, which can be a custom
   function or one of the following:
@@ -51,17 +57,19 @@
   - `:ints`- get all integers
   - `:nats` - get all natural numbers, i.e. ignore the `-` sign
   - `:digits` - extract all single digits
-  - `:chars` - make a list of chars
-  - `:words` - make a list of words"
+  - `:chars` - make a vector of chars
+  - `:words` - make a vestor of words
+  - `:keywords` - make a vector of keywords"
   [s & [parse-fn word-sep]]
   (let [f (case parse-fn
-            :int    parse-long
-            :ints   integers
-            :nats   #(integers % {:negative? false})
-            :digits string->digits
-            :chars  vec
-            :words  #(str/split % (or word-sep #"\s+"))
-            nil     identity
+            :int      parse-long
+            :ints     integers
+            :nats     #(integers % {:negative? false})
+            :digits   string->digits
+            :chars    vec
+            :words    #(words % word-sep)
+            :keywords #(mapv keyword (words % word-sep))
+            nil       identity
             parse-fn)]
     (f s)))
 

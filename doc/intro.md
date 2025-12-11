@@ -78,8 +78,9 @@ Possible "built-ins" to pass to the `parse-fn` parameter:
 - `:ints`- get all integers
 - `:nats` - get all natural numbers, i.e. ignore the `-` sign
 - `:digits` - extract all single digits
-- `:chars` - make a list of chars
-- `:words` - make a list of words
+- `:chars` - make a vector of chars
+- `:words` - make a vector of words
+- `:keywords` - make a vector of keywords
 
 This function is usually used on single-line inputs.
 

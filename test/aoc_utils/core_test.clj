@@ -31,8 +31,9 @@
     (test-parsing char-lines        ["abc" "def" "ghi"])
     (test-parsing char-lines :chars [[\a \b \c] [\d \e \f] [\g \h \i]]))
   (testing "words"
-    (test-parsing word-lines        ["a  b c" "d e  f" "g   h   i"])
-    (test-parsing word-lines :words [["a" "b" "c"] ["d" "e" "f"] ["g" "h" "i"]]))
+    (test-parsing word-lines           ["a  b c" "d e  f" "g   h   i"])
+    (test-parsing word-lines :words    [["a" "b" "c"] ["d" "e" "f"] ["g" "h" "i"]])
+    (test-parsing word-lines :keywords [[:a :b :c] [:d :e :f] [:g :h :i]]))
   (testing "custom func"
     (test-parsing int-lines #(mod (abs (parse-long %)) 10) [3 6 9]))
   (testing "separators"
@@ -41,7 +42,9 @@
     (is (= [["ab cd" "ef gh"] ["ij kl" "mn op"]]
            (aoc/parse-lines comma-sep :words #",")))
     (is (= [["ab" "cd" "ef" "gh"] ["ij" "kl" "mn" "op"]]
-           (aoc/parse-lines comma-sep :words #",| "))))
+           (aoc/parse-lines comma-sep :words #",| ")))
+    (is (= [[:ab :cd :ef :gh] [:ij :kl :mn :op]]
+           (aoc/parse-lines comma-sep :keywords #",| "))))
   (testing "pragraphs"
     (is (= ["1,2\n3,4" "5,6\n7,8"]
            (aoc/parse-lines int-paragraphs nil nil #"\n\n")))
@@ -52,7 +55,9 @@
     (is (= [[[1 2] [3 4]] [[5 6] [7 8]]]
            (aoc/parse-paragraphs int-paragraphs :ints)))
     (is (= [[["1" "2"] ["3" "4"]] [["5" "6"] ["7" "8"]]]
-           (aoc/parse-paragraphs int-paragraphs :words #",")))))
+           (aoc/parse-paragraphs int-paragraphs :words #",")))
+    (is (= [[[:1 :2] [:3 :4]] [[:5 :6] [:7 :8]]]
+           (aoc/parse-paragraphs int-paragraphs :keywords #",")))))
 
 
 
