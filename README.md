@@ -24,7 +24,7 @@ Add the following to your `deps.edn` file:
   ,,,
   ; check the latest tag and sha in the releases/tags: 
   ; https://github.com/narimiran/aoc-utils/tags
-  com.github.narimiran/aoc-utils {:git/tag "v0.9.0" :git/sha "c1d07b4"}
+  com.github.narimiran/aoc-utils {:git/tag "v0.9.3" :git/sha "e951804"}
 }
 ```
 
@@ -44,6 +44,7 @@ Or take a look how I used this library in my AoC solutions:
 - [AoC 2019](https://github.com/narimiran/AdventOfCode2019/tree/master/clojure)
 - [AoC 2023](https://github.com/narimiran/AdventOfCode2023/tree/main/clojure)
 - [AoC 2024](https://narimiran.github.io/aoc2024/)
+- [AoC 2025](https://narimiran.github.io/aoc2025/)
 
 
 
