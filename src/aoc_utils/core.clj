@@ -58,7 +58,7 @@
   - `:nats` - get all natural numbers, i.e. ignore the `-` sign
   - `:digits` - extract all single digits
   - `:chars` - make a vector of chars
-  - `:words` - make a vestor of words
+  - `:words` - make a vector of words
   - `:keywords` - make a vector of keywords"
   [s & [parse-fn word-sep]]
   (let [f (case parse-fn
@@ -81,9 +81,11 @@
 
   - `:int` - parse a single integer
   - `:ints`- get all integers
+  - `:nats` - get all natural numbers, i.e. ignore the `-` sign
   - `:digits` - extract all single digits
-  - `:chars` - make a list of chars
-  - `:words` - make a list of words"
+  - `:chars` - make a vector of chars
+  - `:words` - make a vector of words
+  - `:keywords` - make a vector of keywords"
   [input & [parse-fn word-sep nl-sep]]
   (mapv #(parse-input % parse-fn word-sep)
         (str/split input (or nl-sep #"\n"))))
@@ -104,7 +106,8 @@
 (defn grid-get
   "Get an element in `y` row, `x` col of a vector representation of a grid.
 
-  Returns `default` on a point which is out of bounds, or `nil` if not specified."
+  Returns the specified `default` value on a point which is out of bounds,
+  or `nil` if not specified."
   ([grid [x y :as pt]]
    (when-not (nil? pt)
      (grid-get grid x y nil)))
@@ -494,7 +497,7 @@
    xs))
 
 (defmacro do-count
-  "Similar to the `count-if` function above, but allows for a more
+  "Similar to the `count-if` function, but allows for a more
   elaborate predicate, i.e. everything that the `doseq` built-in does."
   {:clj-kondo/lint-as 'clojure.core/doseq}
   [seq-exprs]
