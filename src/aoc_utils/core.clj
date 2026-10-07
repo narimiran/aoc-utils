@@ -325,6 +325,15 @@
    [x (dec y) z] [x (inc y) z]
    [x y (dec z)] [x y (inc z)]])
 
+(defn neighbours-27
+  "All neighbours of a 3D point."
+  [[^long x ^long y ^long z]]
+  (for [dx [-1 0 1]
+        dy [-1 0 1]
+        dz [-1 0 1]]
+    [(+ x dx) (+ y dy) (+ z dz)]))
+
+
 (defn inside-3d?
   "Check if a 3D point (x, y, z) is inside of a cube of a given size."
   ([size [x y z]] (inside-3d? size x y z))
