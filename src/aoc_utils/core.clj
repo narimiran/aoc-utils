@@ -194,8 +194,8 @@
   "Convert a map/set representation of a grid to a printable string of points."
   [points]
   (if (map? points) (show-grid (set (keys points)))
-      (let [x-lim (inc ^long (reduce max (map first points)))
-            y-lim (inc ^long (reduce max (map second points)))]
+      (let [x-lim (inc (long (reduce max (map first points))))
+            y-lim (inc (long (reduce max (map second points))))]
         (str/join \newline
                   (for [y (range y-lim)]
                     (str/join (for [x (range x-lim)]
@@ -218,17 +218,17 @@
 
 (defn pt+
   "Sum of two 2D points."
-  ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
+  [[^long x1 ^long y1] [^long x2 ^long y2]]
   [(+ x1 x2) (+ y1 y2)])
 
 (defn pt-
   "Difference between two 2D points."
-  ^longs [[^long x1 ^long y1] [^long x2 ^long y2]]
+  [[^long x1 ^long y1] [^long x2 ^long y2]]
   [(- x1 x2) (- y1 y2)])
 
 (defn pt*
   "Multiply each coordinate of a 2D point by `magnitude`."
-  ^longs [^long magnitude [^long x ^long y]]
+  [^long magnitude [^long x ^long y]]
   [(* magnitude x) (* magnitude y)])
 
 
@@ -256,9 +256,9 @@
   "Four neighbours of a 2D point.
 
   If `pred` is specified, returns only those neighbours that satisfy it."
-  (^longs [[^long x ^long y]]
+  ([[^long x ^long y]]
    [[x (dec y)] [(dec x) y] [(inc x) y] [x (inc y)]])
-  (^longs [pt pred]
+  ([pt pred]
    (filterv pred (neighbours-4 pt))))
 
 
@@ -266,9 +266,9 @@
   "Four diagonal neighbours of a 2D point.
 
   If `pred` is specified, returns only those neighbours that satisfy it."
-  (^longs [[^long x ^long y]]
+  ([[^long x ^long y]]
    [[(dec x) (dec y)] [(inc x) (dec y)] [(dec x) (inc y)] [(inc x) (inc y)]])
-  (^longs [pt pred]
+  ([pt pred]
    (filterv pred (diagonals pt))))
 
 
@@ -276,8 +276,8 @@
   "Eight neighbours of a 2D point.
 
   If `pred` is specified, returns only those neighbours that satisfy it."
-  (^longs [pt] (neighbours-8 pt identity))
-  (^longs [[^long x ^long y :as pt] pred]
+  ([pt] (neighbours-8 pt identity))
+  ([[^long x ^long y :as pt] pred]
    (for [x' (range (- x 1) (+ x 2))
          y' (range (- y 1) (+ y 2))
          :let [nb [x' y']]
@@ -302,19 +302,19 @@
 
 (defn pt-3d+
   "Sum of two 3D points."
-  ^longs [[^long x1 ^long y1 ^long z1]
-          [^long x2 ^long y2 ^long z2]]
+  [[^long x1 ^long y1 ^long z1]
+   [^long x2 ^long y2 ^long z2]]
   [(+ x1 x2) (+ y1 y2) (+ z1 z2)])
 
 (defn pt-3d-
   "Difference between two 3D points."
-  ^longs [[^long x1 ^long y1 ^long z1]
-          [^long x2 ^long y2 ^long z2]]
+  [[^long x1 ^long y1 ^long z1]
+   [^long x2 ^long y2 ^long z2]]
   [(- x1 x2) (- y1 y2) (- z1 z2)])
 
 (defn pt-3d*
   "Multiply each coordinate of a 3D point by `magnitude`."
-  ^longs [^long magnitude [^long x ^long y ^long z]]
+  [^long magnitude [^long x ^long y ^long z]]
   [(* magnitude x) (* magnitude y) (* magnitude z)])
 
 
@@ -328,9 +328,9 @@
 (defn neighbours-27
   "All neighbours of a 3D point."
   [[^long x ^long y ^long z]]
-  (for [dx [-1 0 1]
-        dy [-1 0 1]
-        dz [-1 0 1]]
+  (for [^long dx [-1 0 1]
+        ^long dy [-1 0 1]
+        ^long dz [-1 0 1]]
     [(+ x dx) (+ y dy) (+ z dz)]))
 
 
@@ -386,7 +386,7 @@
               nb-cond (constantly true)
               cost-fn (constantly 1)
               side-effect (constantly nil)
-              steps-limit ##Inf
+              steps-limit 999999
               end-cond  #(= end %)
               heuristic (if end
                           (fn [pt] (manhattan pt end))
@@ -396,7 +396,7 @@
                     (and size-x size-y) (fn [[x y]] (inside? size-x size-y x y))
                     :else (constantly true))
         nb-filter (every-pred inbounds? (complement walls) nb-cond)
-        neighbours (case nb-num
+        neighbours (case (long nb-num)
                      4 neighbours-4
                      8 neighbours-8
                      (throw (Exception. "aoc: wrong number of neighbours")))]
@@ -410,18 +410,18 @@
       (let [[current ^long steps] (case algo
                                     :a-star (first (peek queue))
                                     (peek queue))
-            nb-cost     (fn [pt] (+ steps ^long (cost-fn current pt)))
+            nb-cost     (fn [pt] (+ steps (long (cost-fn current pt))))
             seen-filter (fn [pt] (or allow-revisits?
-                                     (< ^long (nb-cost pt)
-                                        (or (second (seen pt))
-                                            steps-limit))))]
+                                     (< (long (nb-cost pt))
+                                        (long (or (second (seen pt))
+                                                  steps-limit)))))]
         (side-effect {:pt current
                       :steps steps
                       :seen seen
                       :queue queue})
         (cond
           (or (nil? current)
-              (>= steps steps-limit)
+              (>= steps (long steps-limit))
               (end-cond current)) {:steps   steps
                                    :seen    (set (keys seen))
                                    :costs   (into {} (map (fn [[k [_ s]]] [k s]) seen))
@@ -440,7 +440,7 @@
                          :dfs    (conj q [pt cost])
                          :bfs    (conj q [pt cost])
                          :dijk   (assoc q pt cost)
-                         :a-star (assoc q [pt cost] (+ cost ^long (heuristic pt)))))
+                         :a-star (assoc q [pt cost] (+ cost (long (heuristic pt))))))
                      (pop queue)
                      nbs+costs)
              (reduce (fn [s [pt cost]] (assoc s pt [current cost]))
@@ -605,7 +605,7 @@
 (defn divisible?
   "Check if `n` is divisible by `n`."
   [^long n ^long d]
-  (zero? ^long (mod n d)))
+  (zero? (long (mod n d))))
 
 
 (defn binary-search
