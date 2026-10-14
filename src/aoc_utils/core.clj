@@ -272,19 +272,23 @@
    (filterv pred (diagonals pt))))
 
 
+(def offsets-8
+  "Eight neighbouring offset of a 2D point."
+  [[-1 -1] [-1 0] [-1 1]
+   [ 0 -1]        [ 0 1]
+   [ 1 -1] [ 1 0] [ 1 1]])
+
+
 (defn neighbours-8
   "Eight neighbours of a 2D point.
 
   If `pred` is specified, returns only those neighbours that satisfy it."
   ([pt] (neighbours-8 pt identity))
-  ([[^long x ^long y :as pt] pred]
-   (for [x' (range (- x 1) (+ x 2))
-         y' (range (- y 1) (+ y 2))
-         :let [nb [x' y']]
-         :when (and (not= nb pt)
-                    (pred nb))]
-     nb)))
-
+  ([[^long x ^long y] pred]
+   (into []
+         (comp (map (fn [[^long dx ^long dy]] [(+ x dx) (+ y dy)]))
+               (filter pred))
+         offsets-8)))
 
 
 
@@ -325,13 +329,24 @@
    [x (dec y) z] [x (inc y) z]
    [x y (dec z)] [x y (inc z)]])
 
+(def offsets-27
+  "All 27 offsets of a 3D point (including the point itself)."
+  (vec (for [dx [-1 0 1]
+             dy [-1 0 1]
+             dz [-1 0 1]]
+         [dx dy dz])))
+
 (defn neighbours-27
-  "All neighbours of a 3D point."
-  [[^long x ^long y ^long z]]
-  (for [^long dx [-1 0 1]
-        ^long dy [-1 0 1]
-        ^long dz [-1 0 1]]
-    [(+ x dx) (+ y dy) (+ z dz)]))
+  "All neighbours of a 3D point, including the point itself.
+
+  If `pred` is specified, returns only those neighbours that satisfy it."
+  ([pt] (neighbours-27 pt identity))
+  ([[^long x ^long y ^long z] pred]
+   (into []
+         (comp (map (fn [[^long dx ^long dy ^long dz]]
+                      [(+ x dx) (+ y dy) (+ z dz)]))
+               (filter pred))
+         offsets-27)))
 
 
 (defn inside-3d?
