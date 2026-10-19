@@ -396,6 +396,17 @@
   clojure.lang.PersistentQueue/EMPTY)
 
 
+
+
+(defn- neighbours-fn [nb-func nb-num]
+  (or nb-func
+      (case nb-num
+        4 neighbours-4
+        8 neighbours-8
+        :x diagonals
+        (throw (Exception. "aoc: wrong number of neighbours")))))
+
+
 (defn- build-path [current seen]
   (loop [curr current
          path nil]
@@ -403,21 +414,49 @@
       path
       (recur (first (seen curr)) (conj path curr)))))
 
+(defn- algos [algo start heuristic]
+  (case algo
+    :dfs {:init (list [start 0])
+          :head peek
+          :push (fn [q pt cost] (conj q [pt cost]))}
+    :bfs {:init (conj empty-queue [start 0])
+          :head peek
+          :push (fn [q pt cost] (conj q [pt cost]))}
+    :dijk {:init (priority-map start 0)
+           :head peek
+           :push (fn [q pt cost] (assoc q pt cost))}
+    :a-star {:init (priority-map [start 0] (heuristic start))
+             :head #(first (peek %))
+             :push (fn [q pt ^long cost]
+                     (assoc q [pt cost] (+ cost (long (heuristic pt)))))}
+    (throw (Exception. "aoc: unknown graph algorithm"))))
+
+(defn- seen-cost [seen pt limit]
+  (if-let [[_ cost] (seen pt)]
+    cost
+    limit))
+
 
 (defn traverse
   "General graph traversal function. Not very performant. Not very pretty.
 
-  The simplest version needs just `:start`, `:end` and `:walls` keys,
-  and either `:nb-num` (number of neighbours to consider) or a custom
-  `:nb-func`.
+  The first argument, `algo` is one of: `:dfs`, `:bfs`, `:dijk` or `a-star`.
 
-  The list of possible keys passed in the options map is quite large:
-  ```
-  [start end walls size size-x size-y
-   nb-func nb-num nb-cond end-cond
-   cost-fn heuristic steps-limit
-   allow-revisits? side-effect]
-  ```
+  The second argument is a map with various (mostly optional) keys.
+  At minimum, you need to provide `:start` and `:end` points, and a set of `:walls`.
+
+  Optional keys:
+
+  - `nb-num` or `nb-func`: number of neighbours (4 (default), 8 or `:x` for diagonals)
+    or a custom function
+  - `nb-cond`: a valid neighbour needs to satisfy this predicate
+  - `size` or `size-x`+`size-y`: outer bounds; outside points are skipped
+  - `end-cond`: stop if a point satisfies this predicate (default: `:end`)
+  - `steps-limit`: stop if you reached this limit
+  - `cost-fn`: cost function of going from a point to a point (default: 1)
+  - `heuristic`: for A* (default: Manhattan distance to `:end`)
+  - `allow-revisits?`: revisit points (default: false)
+  - `side-effect`: function to be called on every step (it can be `println` for debugging)
 
   It's best to read the function's source code to understand what each does."
   [algo {:keys [start end walls size size-x size-y
@@ -428,67 +467,53 @@
               walls  #{}
               nb-cond (constantly true)
               cost-fn (constantly 1)
-              side-effect (constantly nil)
-              steps-limit 999999
-              end-cond  #(= end %)
-              heuristic (if end
-                          (fn [pt] (manhattan pt end))
-                          (constantly 0))}}]
-  (let [inbounds? (cond
+              steps-limit 999999}}]
+  (let [limit (long steps-limit)
+        heuristic (or heuristic
+                      (if end
+                        (fn [pt] (manhattan pt end))
+                        (constantly 0)))
+        end? (or end-cond #(= end %))
+        inbounds? (cond
                     size #(inside? size %)
                     (and size-x size-y) (fn [[x y]] (inside? size-x size-y x y))
                     :else (constantly true))
-        nb-filter (every-pred inbounds? (complement walls) nb-cond)
-        neighbours (case (long nb-num)
-                     4 neighbours-4
-                     8 neighbours-8
-                     (throw (Exception. "aoc: wrong number of neighbours")))]
-    (loop [queue (case algo
-                   :dfs    (list [start 0])
-                   :bfs    (conj empty-queue [start 0])
-                   :dijk   (priority-map start 0)
-                   :a-star (priority-map [start 0] (heuristic start))
-                   (throw (Exception. "aoc: unknown graph algorithm")))
+        valid? (fn [pt]
+                 (and (inbounds? pt)
+                      (not (walls pt))
+                      (nb-cond pt)))
+        nb-fn (neighbours-fn nb-func nb-num)
+        {:keys [init head push]} (algos algo start heuristic)]
+    (loop [queue init
            seen {start [:start 0]}]
-      (let [[current ^long steps] (case algo
-                                    :a-star (first (peek queue))
-                                    (peek queue))
-            nb-cost     (fn [pt] (+ steps (long (cost-fn current pt))))
-            seen-filter (fn [pt] (or allow-revisits?
-                                     (< (long (nb-cost pt))
-                                        (long (or (second (seen pt))
-                                                  steps-limit)))))]
-        (side-effect {:pt current
-                      :steps steps
-                      :seen seen
-                      :queue queue})
+      (let [[current steps] (head queue)]
+        (when side-effect
+          (side-effect {:pt current, :steps steps, :seen seen, :queue queue}))
         (cond
           (or (nil? current)
-              (>= steps (long steps-limit))
-              (end-cond current)) {:steps   steps
-                                   :seen    (set (keys seen))
-                                   :costs   (into {} (map (fn [[k [_ s]]] [k s]) seen))
-                                   :count   (count seen)
-                                   :queue   queue
-                                   :path    #(build-path current seen) ; don't build it if not needed
-                                   :current current}
+              (>= (long steps) limit)
+              (end? current)) {:steps   steps
+                               :current current
+                               :count   (count seen)
+                               :queue   queue
+                               ; fns, so these are not built if not needed:
+                               :seen    #(set (keys seen))
+                               :costs   #(into {} (map (fn [[k [_ s]]] [k s]) seen))
+                               :path    #(build-path current seen)}
           :else
-          (let [nbs (if nb-func
-                      (filter (every-pred nb-filter seen-filter) (nb-func current))
-                      (neighbours current (every-pred nb-filter seen-filter)))
-                nbs+costs (map (fn [pt] [pt (nb-cost pt)]) nbs)]
-            (recur
-             (reduce (fn [q [pt ^long cost]]
-                       (case algo
-                         :dfs    (conj q [pt cost])
-                         :bfs    (conj q [pt cost])
-                         :dijk   (assoc q pt cost)
-                         :a-star (assoc q [pt cost] (+ cost (long (heuristic pt))))))
-                     (pop queue)
-                     nbs+costs)
-             (reduce (fn [s [pt cost]] (assoc s pt [current cost]))
-                     seen
-                     nbs+costs))))))))
+          (let [[queue' seen']
+                (reduce (fn [[q s :as acc] nb]
+                          (if (valid? nb)
+                            (let [cost (+ (long steps) (long (cost-fn current nb)))]
+                              (if (or allow-revisits?
+                                      (< cost (long (seen-cost s nb limit))))
+                                [(push q nb cost) (assoc s nb [current cost])]
+                                acc))
+                            acc))
+                        [(pop queue) seen]
+                        (nb-fn current))]
+            (recur queue' seen')))))))
+
 
 
 (defn dfs

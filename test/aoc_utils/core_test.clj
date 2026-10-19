@@ -216,6 +216,8 @@
         size 5]
     (testing "dfs"
       (is (= 25 (:count (aoc/dfs {:start start
+                                  :size size}))))
+      (is (= 25 (:count (aoc/dfs {:start start
                                   :end-cond (constantly false)
                                   :size size}))))
       (is (= 13 (:steps (aoc/dfs {:start start
@@ -223,6 +225,8 @@
                                   :walls walls
                                   :size size})))))
     (testing "bfs"
+      (is (= 25 (:count (aoc/bfs {:start start
+                                  :size size}))))
       (is (= 25 (:count (aoc/bfs {:start start
                                   :end-cond (constantly false)
                                   :size size}))))
@@ -236,6 +240,8 @@
                                  :size size})))))
     (testing "dijkstra"
       (is (= 25 (:count (aoc/dijkstra {:start start
+                                       :size size}))))
+      (is (= 25 (:count (aoc/dijkstra {:start start
                                        :end-cond (constantly false)
                                        :size size}))))
       (is (= 13 (:steps (aoc/dijkstra {:start start
@@ -247,6 +253,8 @@
                                       :walls with-hole
                                       :size size})))))
     (testing "a-star"
+      (is (= 25 (:count (aoc/a-star {:start start
+                                     :size size}))))
       (is (= 25 (:count (aoc/a-star {:start start
                                      :end-cond (constantly false)
                                      :size size}))))
