@@ -64,6 +64,7 @@
 
 (def input-grid "#..\n..#\n##.")
 (def grid (aoc/parse-lines input-grid :chars))
+(def grid-string (aoc/parse-lines input-grid))
 (def grid-print "█  \n  █\n██ ")
 (def walls {[0 0] \# , [2 1] \# , [0 2] \# , [1 2] \#})
 (def hashed-walls {0 \# , 1002 \# , 2000 \# , 2001 \#})
@@ -97,6 +98,13 @@
     (is (= hashed-walls (:walls (aoc/create-hashed-grid grid {#{\#} :walls}))))
     (is (= (set (keys custom-hashed-walls)) (:walls (aoc/create-hashed-grid grid {\# :walls} 100))))
     (is (= custom-hashed-walls (:walls (aoc/create-hashed-grid grid {#{\#} :walls} 100)))))
+
+  (testing "create grid from string rows"
+    (let [g (aoc/create-grid grid-string {\# :walls})]
+      (is (= (set (keys walls)) (:walls g)))
+      (is (= 3 (:width g)))
+      (is (= 3 (:height g)))
+      (is (= 3 (:size g)))))
 
   (testing "create grid 2"
     (let [g (aoc/create-grid grid-2 {\# :walls

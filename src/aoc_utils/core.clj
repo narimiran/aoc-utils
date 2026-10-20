@@ -155,34 +155,36 @@
 (defn- create-grid-aux
   "Create a hashmap representation of a grid from a 2D vector."
   ([v preds multi]
-   (reduce-kv
-    (fn [acc ^long j row]
-      (reduce-kv
-       (fn [acc ^long i c]
-         (if-let [[char-key? found]
-                  (some (fn [[k v]]
-                          (let [char-key? (char? k)]
-                            (when (if char-key? (= k c) (k c))
-                              [char-key? v])))
-                        preds)]
-           (if char-key?
-             (update acc found (fnil conj (if multi (i/int-set) #{}))
-                   (if multi
-                     (+ (* j ^long multi) i)
-                     [i j]))
-             (update acc found (fnil conj (if multi (i/int-map) {}))
-                     (if multi
-                       [(+ (* j ^long multi) i) c]
-                       [[i j] c])))
-           acc))
-       acc
-       (vec row)))
-    (let [h (count v)
-          w (count (first v))]
-      {:height h
-       :width  w
-       :size (when (= h w) h)})
-    v)))
+   (let [h       (count v)
+         w       (count (first v))
+         multi   (when multi (long multi))
+         pos-fn  (if multi
+                   (fn [^long i ^long j] (+ (* j (long multi)) i))
+                   (fn [i j] [i j]))
+         set-add (fnil conj (if multi (i/int-set) #{}))
+         map-add (fnil conj (if multi (i/int-map) {}))
+         preds'  (mapv (fn [[k kw]]
+                         (let [single-pred? (char? k)]
+                           [single-pred? (if single-pred? #(= k %) k) kw]))
+                       preds)]
+     (reduce-kv
+      (fn [acc j row]
+        (reduce-kv (fn [acc i c]
+                     (if-let [[single-pred? kw]
+                              (some (fn [[single-pred? test-fn kw]]
+                                      (when (test-fn c)
+                                        [single-pred? kw]))
+                                    preds')]
+                       (let [pos (pos-fn i j)]
+                         (if single-pred?
+                           (update acc kw set-add pos)
+                           (update acc kw map-add [pos c])))
+                       acc))
+                   acc
+                   (vec row)))
+      {:height h, :width w, :size (when (= h w) h)}
+      v))))
+
 
 (defn create-grid
   "Create a hashmap representation of a grid from a 2D vector,
