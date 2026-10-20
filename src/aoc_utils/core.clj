@@ -276,9 +276,9 @@
   "Check if a point (x, y) is inside of a square/rectangle of a given size."
   ([size [x y]] (inside? size size x y))
   ([size x y]   (inside? size size x y))
-  ([size-x size-y x y]
-   (and (< -1 x size-x)
-        (< -1 y size-y))))
+  ([^long size-x ^long size-y ^long x ^long y]
+   (and (<= 0 x) (< x size-x)
+        (<= 0 y) (< y size-y))))
 
 
 
@@ -382,10 +382,11 @@
 (defn inside-3d?
   "Check if a 3D point (x, y, z) is inside of a cube of a given size."
   ([size [x y z]] (inside-3d? size x y z))
-  ([size x y z]
-   (and (< -1 x size)
-        (< -1 y size)
-        (< -1 z size))))
+  ([^long size ^long x ^long y ^long z]
+   (and (<= 0 x) (< x size)
+        (<= 0 y) (< y size)
+        (<= 0 z) (< z size))))
+
 
 
 
